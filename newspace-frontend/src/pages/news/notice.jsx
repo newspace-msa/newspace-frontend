@@ -3,12 +3,10 @@ import styled from "styled-components";
 import { Megaphone, Pencil, Check } from "lucide-react";
 
 const NoticeWrapper = styled.div`
-    position: absolute;
-    top: 50px;
-    left: 170px;
     display: flex;
     align-items: center;
     gap: 10px; 
+    margin-bottom: 20px;
 `;
 
 const NoticeContainer = styled.div`

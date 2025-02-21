@@ -16,6 +16,7 @@ const SidebarContainer = styled.div`
     align-items: center;
     padding-top: 30px;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000; 
 `;
 
 const SidebarLogo = styled.img`
