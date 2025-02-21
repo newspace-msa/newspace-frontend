@@ -1,4 +1,5 @@
 import Sidebar from "./sidebar";
+import Notice from "./notice";
 
 
 import styled from "styled-components";
@@ -17,6 +18,7 @@ const NewsMain = () => {
     return (
         <Container>
             <Sidebar />
+            <Notice />
             <Content>
                 <h1>뉴스 메인 페이지</h1>
             </Content>
