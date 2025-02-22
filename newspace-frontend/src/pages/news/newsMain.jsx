@@ -9,6 +9,8 @@ import Notice from "./notice";
 import NewsKeyword from "./keywords";
 import NewsArticle from "./article";
 import UserToggle from "../user/userToggle";
+import { useNavigate } from 'react-router-dom';
+
 
 import {
     NewsTrack,
@@ -121,6 +123,7 @@ const Divider = styled.div`
 const NewsMain = () => {
     // 로그인 상태
     const [isAuthorized, authorize] = useState(false); 
+    const navigate = useNavigate(); 
 
     //임시 사용자 데이터
     const [user, setUser] = useState({
@@ -132,6 +135,10 @@ const NewsMain = () => {
     });
 
     const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+    const handleLogin = () => {
+        navigate('/login');
+    };
 
     const logout = () => {
         authorize(false);
@@ -175,51 +182,51 @@ const NewsMain = () => {
             </SidebarContainer>
             <ContentContainer>
                 <NoticeContainer>
-                <Notice />
-                {isAuthorized ? (
-                <UserInfoContainer>
-                    <UserGreeting>
-                        안녕하세요, <strong>{user.nickname}</strong>님!
-                    </UserGreeting>
-                    <UserIconContainer 
-                        src={user.image || defaultProfile} 
-                        alt="user" 
-                        onClick={() => setDropdownOpen(!isDropdownOpen)} 
-                    />
-                    <UserToggle 
-                        isDropdownOpen={isDropdownOpen} 
-                        user={user} 
-                        profile={defaultProfile} 
-                        logout={logout} 
-                    />
-                </UserInfoContainer>
-                ) : (
-                    <LoginText onClick={() => authorize(true)}>로그인</LoginText>
-                )}
+                    <Notice />
+                    {isAuthorized ? (
+                        <UserInfoContainer>
+                            <UserGreeting>
+                                안녕하세요, <strong>{user.nickname}</strong>님!
+                            </UserGreeting>
+                            <UserIconContainer 
+                                src={user.image || defaultProfile} 
+                                alt="user" 
+                                onClick={() => setDropdownOpen(!isDropdownOpen)} 
+                            />
+                            <UserToggle 
+                                isDropdownOpen={isDropdownOpen} 
+                                user={user} 
+                                profile={defaultProfile} 
+                                logout={logout} 
+                            />
+                        </UserInfoContainer>
+                    ) : (
+                        <LoginText onClick={handleLogin}>로그인</LoginText>  // 로그인 함수 호출로 업데이트
+                    )}
                 </NoticeContainer>
-                    <NewsContainer>
-                        <NewsKeyword />
-                        <a href="https://www.yna.co.kr/view/AKR20250217150300001" target="_blank" rel="noopener noreferrer">
-                            <NewsArticle style={{ cursor: "pointer" }} />
-                        </a>
-                    </NewsContainer>
-                    <Divider/>
-                    <NewsGridContainer>
+                <NewsContainer>
+                    <NewsKeyword />
+                    <a href="https://www.yna.co.kr/view/AKR20250217150300001" target="_blank" rel="noopener noreferrer">
+                        <NewsArticle style={{ cursor: "pointer" }} />
+                    </a>
+                </NewsContainer>
+                <Divider/>
+                <NewsGridContainer>
                     <NewsTrack>
-                    {newsList.map((news, index) => (
-                        <a 
-                            key={index} 
-                            href={news.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: "none", color: "inherit" }} 
-                        >
-                            <NewsCard key={index}>
-                                <NewsTitle>{news.title}</NewsTitle>
-                                <NewsImage src={news.image} alt="뉴스 이미지" />
-                                <NewsContent>{news.content}</NewsContent>
-                            </NewsCard>
-                        </a>
+                        {newsList.map((news, index) => (
+                            <a 
+                                key={index} 
+                                href={news.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{ textDecoration: "none", color: "inherit" }} 
+                            >
+                                <NewsCard key={index}>
+                                    <NewsTitle>{news.title}</NewsTitle>
+                                    <NewsImage src={news.image} alt="뉴스 이미지" />
+                                    <NewsContent>{news.content}</NewsContent>
+                                </NewsCard>
+                            </a>
                         ))}
                     </NewsTrack>
                 </NewsGridContainer>
