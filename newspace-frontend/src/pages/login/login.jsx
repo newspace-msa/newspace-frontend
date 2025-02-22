@@ -20,11 +20,11 @@ function Login() {
     };
 
     return (
-        <div className="login-container login-abs-position login-flex-center" style={{ width: '100%', height: '100vh', backgroundColor: '#F5F5FB' }}>
+        <div className="login-container">
             <div className="login-top-left-logo" onClick={handleLogoClick}>
-                <img src={logo} alt="News Space Logo" style={{ width: '150px', cursor: 'pointer' }} />
+                <img src={logo} alt="News Space Logo" className="logo-image" />
             </div>
-            <div className="login-form login-background-white" style={{ borderRadius: '20px', padding: '20px', width: '350px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+            <div className="login-form">
                 <h1 className="login-text-large">로그인</h1>
                 <div className="login-divider"></div>
                 <form onSubmit={handleLogin}>
