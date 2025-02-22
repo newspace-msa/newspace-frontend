@@ -52,14 +52,14 @@ const AddCategoryButton = styled.div`
     margin-top: auto;
     margin-bottom: 40px;
     padding: 15px;
-    width: 15px;  /* 버튼 크기 조정 */
-    height: 15px; /* 버튼 크기 조정 */
+    width: 15px; 
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     background-color: #1D7F81;
-    border-radius: 50px; /* 더 둥글게 조정 */
+    border-radius: 50px; 
     color: white;
     transition: 0.3s ease;
 
@@ -230,6 +230,7 @@ const Sidebar = () => {
         };
     }, [popup]);
 
+    // 카테고리 추가
     const addCategory = () => {
         if (newCategory && selectedIcon) {
             setCategories([...categories, { name: newCategory, icon: selectedIcon }]);
