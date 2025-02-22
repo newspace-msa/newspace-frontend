@@ -90,7 +90,7 @@ const NewsDetailPage = () => {
                         <DetailValue>{newsData.date}</DetailValue>
                     </DetailRow>
                     <DetailRow>
-                        <DetailLabel>제공사</DetailLabel>
+                        <DetailLabel>출처</DetailLabel>
                         <DetailValue>{newsData.source}</DetailValue>
                     </DetailRow>
                     <DetailRow>
