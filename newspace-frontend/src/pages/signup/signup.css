@@ -1,16 +1,7 @@
 /* signup.css */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%; /* 전체 높이를 100%로 설정 */
-    width: 100%; /* 전체 너비를 100%로 설정 */
-    background: #F5F5FB; /* 배경색 설정 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.flex-center {
+
+.signup-flex-center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,15 +9,15 @@ html, body {
 }
 
 
-.abs-position {
+.signup-abs-position {
     position: absolute; /* 절대 위치 설정 */
 }
 
-.background-white {
+.signup-background-white {
     background: #F5F5FB; /* 흰색 배경 적용 */
 }
 
-.flex-center {
+.signup-flex-center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,7 +28,7 @@ html, body {
 
 
 /* 로고 이미지 상단 고정 */
-.top-left-logo {
+.signup-top-left-logo {
     position: fixed; /* 화면 상단에 고정 */
     top: 0; /* 최상단에 위치 */
     left: 0;
@@ -77,11 +68,11 @@ html, body {
 
 
 
-.input-group {
+.signup-input-group {
     margin-bottom: 10px;
 }
 
-.input-text {
+.signup-input-text {
     width: 100%;
     padding: 10px;
     border: 1px solid #cccccc;
@@ -90,7 +81,7 @@ html, body {
     box-sizing: border-box;
 }
 
-.input-text:focus {
+.signup-input-text:focus {
     border-color: #66afe9;
     outline: none;
 }
@@ -112,13 +103,14 @@ html, body {
 
 .signup-button:hover {
     background-color: #2E9D9F; /* 호버 시 버튼 색 변경 */
+    transition: background-color 1s;  /* 부드러운 색상 전환 효과 */
 }
 
-.input-group label {
+.signup-input-group label {
     color: black; /* 라벨 글씨 색상을 검정색으로 설정 */
 }
 
-.divider {
+.signup-divider {
     height: 1px; /* 선의 두께 */
     background-color: #1D7F81; /* 선의 색상 */
     width: 90%; /* 전체 너비의 90% */
@@ -131,7 +123,7 @@ html, body {
 
 
 /* 생년월일 드롭다운 스타일링 */
-.date-selectors select {
+.signup-date-selectors select {
     width: 30%; /* 드롭다운 너비 조정 */
     padding: 8px 10px; /* 패딩 조정 */
     margin-right: 5%; /* 드롭다운 간 간격 조정 */
@@ -148,16 +140,51 @@ html, body {
     background-size: 12px; /* 화살표 크기 */
 }
 
-.date-selectors select:hover {
+.signup-date-selectors select:hover {
     border-color: #66afe9; /* 호버 시 테두리 색상 변경 */
 }
 
-.date-selectors select:focus {
+.signup-date-selectors select:focus {
     border-color: #66afe9;
     outline: none;
+    
 }
 
 /* 마지막 드롭다운은 오른쪽 마진 없애기 */
-.date-selectors select:last-child {
+.signup-date-selectors select:last-child {
     margin-right: 0;
+}
+
+.flex-row {
+    display: flex;
+    align-items: center;
+}
+
+.signup-input-text {
+    flex: 1; /* 입력란을 가능한 많이 넓히기 */
+    margin-right: 10px; /* 버튼과의 간격 */
+}
+
+
+
+.signup-check-button {
+    padding: 8px 15px;
+    background-color: #4ab3b4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    outline: none;
+    transition: background-color 0.3s;  /* 부드러운 색상 전환 효과 */
+}
+
+.signup-check-button:focus,
+.signup-check-button:active {
+    outline: none;
+    border: none;
+    background-color: #4db6b8; /* 버튼 활성화 시 색상 변경 */
+}
+
+.signup-check-button.active {
+    background-color: #2aa1a3; /* 활성화 시 색상 변경 */
 }

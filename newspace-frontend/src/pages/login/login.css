@@ -10,7 +10,7 @@ html, body {
     justify-content: center;
 }
 
-.flex-center {
+.login-flex-center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -18,15 +18,15 @@ html, body {
 }
 
 
-.abs-position {
+.login-abs-position {
     position: absolute; /* 절대 위치 설정 */
 }
 
-.background-white {
+.login-background-white {
     background: #F5F5FB; /* 흰색 배경 적용 */
 }
 
-.flex-center {
+.login-flex-center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,7 +37,7 @@ html, body {
 
 
 /* 로고 이미지 상단 고정 */
-.top-left-logo {
+.login-top-left-logo {
     position: fixed; /* 화면 상단에 고정 */
     top: 0; /* 최상단에 위치 */
     left: 0;
@@ -45,7 +45,7 @@ html, body {
 }
 
 
-.divider {
+.login-divider {
     height: 1px; /* 선의 두께 */
     background-color: #1D7F81; /* 선의 색상 */
     width: 90%; /* 전체 너비의 90% */
@@ -93,7 +93,7 @@ html, body {
 }
 
 /* 로그인 타이틀 스타일 */
-.text-large {
+.login-text-large {
     font-family: 'Baloo 2', sans-serif; /* 글꼴 설정 */
     font-weight: 700; /* 굵은 글씨 */
     font-size: 36px; /* 글자 크기 조정 */
@@ -102,11 +102,11 @@ html, body {
 }
 
 /* 입력 필드 스타일 */
-.input-group {
+.login-input-group {
     margin-bottom: 10px;
 }
 
-.input-text {
+.login-input-text {
     width: 100%;
     padding: 10px;
     border: 1px solid #cccccc; /* 테두리 색상 */
@@ -115,7 +115,7 @@ html, body {
     box-sizing: border-box; /* 패딩과 테두리 포함하여 너비 계산 */
 }
 
-.input-text:focus {
+.login-input-text:focus {
     border-color: #66afe9; /* 포커스 시 테두리 색상 변경 */
     outline: none; /* 기본 아웃라인 제거 */
 }
@@ -123,7 +123,7 @@ html, body {
 
 /* 버튼 스타일 */
 #login-button,
-#signup-button {
+#login-button {
     width: 200px; /* 버튼의 너비 설정 */
     height: 50px; /* 버튼의 높이 설정 */
     border-radius: 10px; /* 버튼의 모서리 둥글게 처리 */
@@ -135,8 +135,9 @@ html, body {
 }
 
 #login-button:hover,
-#signup-button:hover {
+#login-button:hover {
     background-color: #2E9D9F; /* 호버 시 버튼 색 변경 */
+    transition: background-color 1s;  /* 부드러운 색상 전환 효과 */
 }
 
 /* 이미지 스타일 */
@@ -148,20 +149,20 @@ html, body {
 }
 
 
-.signup-link {
+.login-link {
     color: #1D7F81; /* 회원가입 링크의 색상 설정 */
     display: block;
     margin-top: 10px;
     text-decoration: none; /* 밑줄 제거 */
 }
 
-.signup-link:hover,
-.signup-link:active { /* 호버 및 활성 상태에서 색상 유지 */
+.login-link:hover,
+.login-link:active { /* 호버 및 활성 상태에서 색상 유지 */
     text-decoration: none;
     color: #1D7F81; /* 호버와 클릭 상태에서도 색상 변화 없음 */
 }
 
-.divider {
+.login-divider {
     height: 1px; /* 선의 두께 */
     background-color: #1D7F81; /* 선의 색상 */
     width: 90%; /* 전체 너비의 90% */
