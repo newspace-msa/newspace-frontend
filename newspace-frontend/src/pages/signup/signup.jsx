@@ -22,6 +22,7 @@ function Signup() {
         navigate('/news/main');
     };
 
+
     // 아이디 중복 확인
     const checkUsernameAvailability = async () => {
         setIsActive(true);
@@ -52,6 +53,7 @@ function Signup() {
         alert('회원가입 완료!');
         navigate('/news/main');
     };
+
 
     // 년, 월, 일 옵션 생성
     const years = Array.from({ length: 126 }, (_, i) => (2025 - i).toString());

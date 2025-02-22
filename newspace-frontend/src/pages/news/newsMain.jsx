@@ -27,36 +27,31 @@ const SidebarWidth = "130px";
 
 const PageContainer = styled.div`
     display: flex;
-    min-width: 1500px; 
-`;
-
-const SidebarContainer = styled.div`
-    position: fixed; /* 사이드바 고정 */
-    left: 0;
-    top: 0;
-    width: ${SidebarWidth};
-    height: 100vh;
-    z-index: 1000; 
+    width: 100vw; /* 화면 너비에 맞춤 */
+    min-width: 100%;
+    overflow-x: hidden; /* 가로 스크롤 제거 */
 `;
 
 const NoticeContainer = styled.div`
-    position: fixed;
-    top: 15px; 
-    left: 170px;
+    position: fixed; 
+    top: 20px; 
+    left: calc(${SidebarWidth} + 10px);
     background-color: #ffffff; 
-    z-index: 1000; 
+    z-index: 800; 
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 10px 25px;
 `;
 
 const UserInfoContainer = styled.div`
     position: fixed;
-    top: 15px;
+    top: 33px; 
     right: 80px; 
     display: flex;
     align-items: center;
     gap: 10px;
+    z-index: 800;
 `;
 
 const UserGreeting = styled.span`
@@ -67,7 +62,7 @@ const UserGreeting = styled.span`
 
 const UserIconContainer = styled.img`
     position: fixed;
-    top: 15px;
+    top: 30px;
     right: 20px; 
     width: 40px;
     height: 40px;
@@ -77,13 +72,15 @@ const UserIconContainer = styled.img`
 `;
 
 const LoginText = styled.span`
+    position: fixed;
+    top: 40px; /* Notice와 같은 높이 */
+    right: 20px; /* 화면 오른쪽 끝 정렬 */
     font-size: 16px;
     font-weight: bold;
     color: #007bff;
     cursor: pointer;
-    position: fixed;
-    top: 15px;
-    right: 20px;
+    display: flex;
+    align-items: center;
     
     &:hover {
         text-decoration: underline;
@@ -100,20 +97,21 @@ const ContentContainer = styled.div`
 
 const NewsContainer = styled.div`
     position: fixed; 
-    top: 100px; 
-    left: 170px; 
-    width: 1100px; 
+    top: 120px; 
+    left: calc(${SidebarWidth} + 40px);
+    width: calc(100vw - ${SidebarWidth} - 50px); 
+    max-width: 1100px;
     display: flex;
     justify-content: flex-start; 
     align-items: flex-start; 
-    gap: 40px; 
+    gap: 30px; 
 `;
 
 const Divider = styled.div`
     position: fixed;
-    top: 380px;
+    top: 400px;
     left: 170px;
-    width: 1320px;
+    width: 85%;
     height: 2px;
     background-color: #ddd;
     z-index: 100;
@@ -177,9 +175,7 @@ const NewsMain = () => {
 
     return (
         <PageContainer>
-            <SidebarContainer>
-                <Sidebar />
-            </SidebarContainer>
+            <Sidebar />
             <ContentContainer>
                 <NoticeContainer>
                     <Notice />
