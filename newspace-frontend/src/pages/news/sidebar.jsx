@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -149,6 +149,30 @@ const AddButton = styled.button`
     }
 `;
 
+const ContextPopup = styled.div`
+    width: 80px;
+    position: fixed;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 10px 0;
+    border-radius: 5px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const ContextPopupItem = styled.div`
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    
+    &:hover {
+        background: #f0f0f0;
+    }
+`;
+
 // 선택 가능한 아이콘 목록
 const iconOptions = [
     { name: "Landmark", component: <Landmark size={24} /> },
@@ -174,6 +198,38 @@ const Sidebar = () => {
     const [newCategory, setNewCategory] = useState("");
     const [selectedIcon, setSelectedIcon] = useState(null);
 
+    const [popup, setPopup] = useState(null);
+    const categoryRefs = useRef({}); 
+
+    // 카테고리 우클릭시 팝업창 뜨기
+    const handleRightClick = (event, category) => {
+        event.preventDefault();
+        if (categoryRefs.current[category.name]) {
+            const rect = categoryRefs.current[category.name].getBoundingClientRect();
+            setPopup({
+                x: 100,
+                y: rect.top + window.scrollY + 10, 
+                category,
+            });
+        }
+    };
+
+    const closePopup = () => setPopup(null);
+
+    // 팝업 닫기 이벤트 핸들러
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (popup && !event.target.closest(".context-popup")) {
+                setPopup(null);
+            }
+        };
+
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [popup]);
+
     const addCategory = () => {
         if (newCategory && selectedIcon) {
             setCategories([...categories, { name: newCategory, icon: selectedIcon }]);
@@ -189,13 +245,25 @@ const Sidebar = () => {
             <Link to="/news/main">
                 <SidebarLogo src={logo1} alt="Logo" />
             </Link>
-
+            <div style={{ position: "relative" }} onClick={closePopup}>
             {categories.map((category, index) => (
-                <SidebarItem key={index} to={`/news/${encodeURIComponent(category.name)}`}>
+                <SidebarItem 
+                    key={index} 
+                    to={`/news/${encodeURIComponent(category.name)}`}
+                    ref={(el) => (categoryRefs.current[category.name] = el)}
+                    onContextMenu={(e) => handleRightClick(e, category)}
+                >
                     {category.icon}
                     <SidebarText>{category.name}</SidebarText>
                 </SidebarItem>
             ))}
+            {popup && (
+                <ContextPopup className="context-popup" style={{ top: popup.y, left: popup.x }}>
+                    <ContextPopupItem onClick={() => alert(`수정: ${popup.category.name}`)}>수정</ContextPopupItem>
+                    <ContextPopupItem onClick={() => alert(`삭제: ${popup.category.name}`)}>삭제</ContextPopupItem>
+                </ContextPopup>
+            )}
+            </div>
 
             {/* + 버튼 추가 */}
             <AddCategoryButton onClick={() => setShowModal(true)}>
