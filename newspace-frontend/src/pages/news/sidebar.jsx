@@ -3,7 +3,9 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import logo1 from "../../assets/newspace_logo1.png"; 
-import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Briefcase, X  } from "lucide-react";
+import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Briefcase, 
+        Home, Settings, Calendar, Star, Bell, BarChart, Shield, Heart, X 
+} from "lucide-react";
 
 const SidebarContainer = styled.div`
     position: fixed;
@@ -108,9 +110,11 @@ const CloseButton = styled.div`
 `;
 
 const IconGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); // 1줄에 8개
     gap: 10px;
+    justify-items: center;
+    padding: 10px;
 `;
 
 const IconOption = styled.div`
@@ -182,16 +186,25 @@ const iconOptions = [
     { name: "Book", component: <Book size={24} /> },
     { name: "Newspaper", component: <Newspaper size={24} /> },
     { name: "Globe", component: <Globe size={24} /> },
-    { name: "Briefcase", component: <Briefcase size={24} /> }
+    { name: "Briefcase", component: <Briefcase size={24} /> },
+    { name: "Home", component: <Home size={24} /> },
+    { name: "BarChart", component: <BarChart size={24} /> },
+    { name: "Settings", component: <Settings size={24} /> },
+    { name: "Calendar", component: <Calendar size={24} /> },
+    { name: "Star", component: <Star size={24} /> },
+    { name: "Bell", component: <Bell size={24} /> },
+    { name: "Shield", component: <Shield size={24} /> },
+    { name: "Heart", component: <Heart size={24} /> }
 ];
 
 
 const Sidebar = () => {
     const [categories, setCategories] = useState([
-        { name: "정치", icon: <Landmark size={24} /> },
-        { name: "경제", icon: <Banknote size={24} /> },
-        { name: "사회", icon: <Users size={24} /> },
-        { name: "문화", icon: <Building size={24} /> },
+
+        // { name: "정치", icon: <Landmark size={24} /> },
+        // { name: "경제", icon: <Banknote size={24} /> },
+        // { name: "사회", icon: <Users size={24} /> },
+        // { name: "문화", icon: <Building size={24} /> },
     ]);
 
     const [showModal, setShowModal] = useState(false);
