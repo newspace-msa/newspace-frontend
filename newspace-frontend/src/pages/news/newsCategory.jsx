@@ -121,7 +121,7 @@ const NewsCategoryPage = () => {
             setLoading(false);
         }
     
-        // ✅ localStorage에 데이터가 없을 때만 API 호출하도록 변경
+        // localStorage에 데이터가 없을 때만 API 호출하도록 변경
         if (!savedData) {
             console.log(`API 호출 필요, localStorage 데이터 없음 (category: ${category})`);
             fetchNews();
