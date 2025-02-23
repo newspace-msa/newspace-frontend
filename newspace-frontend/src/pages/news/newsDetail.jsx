@@ -1,6 +1,8 @@
-import { useParams, Link} from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { fetchNewsByCategory } from "../../api/newsApi";
 
 import Sidebar from "./sidebar";
 
@@ -68,44 +70,69 @@ const NewsLink = styled.a`
 `;
 
 const NewsDetailPage = () => {
-    const { category, id } = useParams();
+    const { category, id } = useParams(); // URL에서 category, id 값 가져오기
+    const [newsData, setNewsData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const newsData = {
-        id: 1,
-        title: "Fed Cuts Interest Rates to 2.5%",
-        content: "The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.",
-        date: "2002-02-21",
-        source: "The New York Times",
-        link: "https://www.nytimes.com/2002/02/21/business/fed-cuts-interest-rates-to-2.5.html"
-    };
+    useEffect(() => {
+        const fetchNewsDetail = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                console.log("현재 카테고리:", category, "요청한 뉴스 ID:", id);
+                const data = await fetchNewsByCategory(category); // 전체 카테고리 뉴스 목록 가져오기
+                const selectedNews = data.find(news => String(news.id) === id); // 클릭한 뉴스 ID에 해당하는 데이터 찾기
+                
+                if (!selectedNews) {
+                    setError("해당 뉴스를 찾을 수 없습니다.");
+                } else {
+                    setNewsData(selectedNews);
+                }
+            } catch (error) {
+                setError("뉴스 데이터를 불러오는 중 오류가 발생했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNewsDetail();
+    }, [category, id]);
 
     return (
         <>
             <Sidebar />
             <Container>
-                <Title>{newsData.title}</Title>
-                <DetailBox>
-                    <DetailRow>
-                        <DetailLabel>날짜</DetailLabel>
-                        <DetailValue>{newsData.date}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>출처</DetailLabel>
-                        <DetailValue>{newsData.source}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>내용</DetailLabel>
-                        <DetailValue>{newsData.content}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>뉴스 링크</DetailLabel>
-                        <DetailValue>
-                            <NewsLink href={newsData.link} target="_blank" rel="noopener noreferrer">
-                                {newsData.link}
-                            </NewsLink>
-                        </DetailValue>
-                    </DetailRow>
-                </DetailBox>
+                {loading && <p>로딩 중...</p>}
+                {error && <p style={{ color: "red" }}>{error}</p>}
+
+                {newsData && (
+                    <>
+                        <Title>{newsData.title}</Title>
+                        <DetailBox>
+                            <DetailRow>
+                                <DetailLabel>날짜</DetailLabel>
+                                <DetailValue>{newsData.date}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>출처</DetailLabel>
+                                <DetailValue>{newsData.source}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>내용</DetailLabel>
+                                <DetailValue>{newsData.content}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>뉴스 링크</DetailLabel>
+                                <DetailValue>
+                                    <NewsLink href={newsData.link} target="_blank" rel="noopener noreferrer">
+                                        {newsData.link}
+                                    </NewsLink>
+                                </DetailValue>
+                            </DetailRow>
+                        </DetailBox>
+                    </>
+                )}
             </Container>
         </>
     );
