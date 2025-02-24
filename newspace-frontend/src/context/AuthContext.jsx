@@ -25,10 +25,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = () => {
+    const login = async() => {
         setIsAuthorized(true);
         localStorage.setItem("isAuthorized", "true");
-        fetchUserInfo();
+        await fetchUserInfo(); 
     };
 
     const logout = () => {
