@@ -149,80 +149,105 @@ const SaveButton = styled.button`
 
 
 
-const EditProfileModal = ({ user, onClose, refreshMainScreen }) => {
+const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(
-        user?.profileImage 
-            ? `${BASE_URL}/api/user/image/${user.profileImage}` 
-            : defaultProfile
-    );
+    const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
+    const [errorMessage, setErrorMessage] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    // 이미지 업로드 핸들러
+    // handleProfileDownload 함수 추가
+    const handleProfileDownload = async () => {
+        try {
+            if (profileImage && profileImage !== defaultProfile) {
+                const link = document.createElement("a");
+                link.href = profileImage;
+                link.download = "profile_image.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("다운로드할 이미지가 없습니다.");
+            }
+        } catch (error) {
+            console.error("❌ [프로필 다운로드 실패]", error);
+            setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
+        }
+    };
+
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileImage(reader.result);
-                setUploadedFile(file);
             };
             reader.readAsDataURL(file);
+            setUploadedFile(file);
         }
     };
 
-    // 이미지 삭제 핸들러
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
             setProfileImage(defaultProfile);
             setUploadedFile(null);
         } catch (error) {
-            console.error("프로필 이미지 삭제 실패", error);
+            console.error("❌ [프로필 삭제 실패]", error);
+            setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
-    // 이미지 다운로드 핸들러
-    const handleProfileDownload = async () => {
-        const downloadUrl = await downloadProfileImage();
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.download = 'downloaded_profile_image.jpg';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // 수정 완료 버튼 활성화 조건
-    const isSaveDisabled = 
-        (!nickname.trim() && !uploadedFile && !password && !confirmPassword) ||
-        (password !== confirmPassword);
-
-    // 저장 핸들러
     const handleSave = async () => {
+        setErrorMessage("");
+
+        if (!nickname.trim()) {
+            setErrorMessage("닉네임을 입력해주세요.");
+            return;
+        }
+
+        if (password || confirmPassword) {
+            if (password !== confirmPassword) {
+                setErrorMessage("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            if (password.length < 4) {
+                setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
+                return;
+            }
+        }
+
+        const updateData = {
+            ...(nickname && { nickname }),
+            ...(password && { newPassword: password }),
+            ...(confirmPassword && { newPasswordConfirm: confirmPassword })
+        };
+
         try {
             if (uploadedFile) {
                 await updateProfileImage(uploadedFile);
             }
+            const updatedUserInfo = await updateUserInfo(updateData);
 
-            const updateData = {
-                nickname: nickname || null,
-                newPassword: password || null,
-                newPasswordConfirm: confirmPassword || null
-            };
-
-            await updateUserInfo(updateData);
-
-            // 메인 화면 새로고침 없이 상태 업데이트
-            refreshMainScreen(); 
+            setNickname(updatedUserInfo.nickname);
+            setProfileImage(getProfileImageUrl(updatedUserInfo.profileImage));
+            alert("개인정보가 수정되었습니다.");
             onClose();
         } catch (error) {
-            console.error("개인정보 수정 실패", error);
+            console.error("❌ [개인정보 수정 실패]", error);
+            setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
+
+ // isSaveDisabled는 handleSave 함수 아래 또는 return 직전에 위치해야 함
+const isSaveDisabled = 
+    !nickname.trim() || 
+    (password && !confirmPassword) ||  
+    (password !== confirmPassword) ||  
+    (password && password.length < 4);   
+
 
     return (
         <Overlay onClick={onClose}>
