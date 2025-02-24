@@ -87,6 +87,11 @@ const LoginText = styled.span`
     }
 `;
 
+const ToggleContainer = styled.div`
+    position: relative;  
+    z-index: 1100;  
+`;
+
 const ContentContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -218,12 +223,14 @@ const NewsMain = () => {
                                 alt="user" 
                                 onClick={toggleDropdown}
                             />
+                            <ToggleContainer>
                             <UserToggle 
                                 isDropdownOpen={isDropdownOpen} 
                                 user={user} 
                                 profile={defaultProfile} 
                                 logout={logout} 
                             />
+                            </ToggleContainer>
                         </UserInfoContainer>
                     ) : (
                         <LoginText onClick={handleLogin}>로그인</LoginText>  // 로그인 함수 호출로 업데이트
