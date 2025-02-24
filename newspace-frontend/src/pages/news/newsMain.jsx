@@ -122,7 +122,9 @@ const Divider = styled.div`
 const NewsMain = () => {
     // 로그인 상태
     const { isAuthorized, user, logout } = useAuth(); 
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+    
+    const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 
     // //임시 사용자 데이터
     // const [user, setUser] = useState({
@@ -169,7 +171,7 @@ const NewsMain = () => {
     const newsList = [...dummyNews, ...dummyNews];
 
     console.log("🟢 현재 로그인 상태:", isAuthorized);
-    console.log("🟢 현재 사용자 정보:", user);
+    console.log("🟢 현재 사용자 정보:", user ? user : "사용자 정보 없음");
 
     return (
         <PageContainer>
@@ -183,7 +185,7 @@ const NewsMain = () => {
                                 안녕하세요, <strong>{user.nickname}</strong>님!
                             </UserGreeting>
                             <UserIconContainer 
-                                src={user.profileImage ? `${BASE_URL}/${user.profileImage}` : defaultProfile} 
+                                src={user.profileImage ? `${BASE_URL}/api/user/profile/${user.profileImage}` : defaultProfile} 
                                 alt="user" 
                                 onClick={() => setDropdownOpen(!isDropdownOpen)} 
                             />
