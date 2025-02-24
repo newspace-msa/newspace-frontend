@@ -149,67 +149,78 @@ const SaveButton = styled.button`
 
 
 
-const EditProfileModal = ({ user, onClose, updateMainScreen }) => {
+const EditProfileModal = ({ user, onClose, refreshMainScreen }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [profileImage, setProfileImage] = useState(
+        user?.profileImage 
+            ? `${BASE_URL}/api/user/image/${user.profileImage}` 
+            : defaultProfile
+    );
+    const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        // 모달을 열 때 사용자의 최신 이미지 불러오기
-        if (user?.image) {
-            setProfileImage(`${process.env.REACT_APP_BACKEND_URL}/images/${user.image}`);
-        }
-    }, [user]);
-
+    // 이미지 업로드 핸들러
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = () => setProfileImage(reader.result);
+            reader.onloadend = () => {
+                setProfileImage(reader.result);
+                setUploadedFile(file);
+            };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleProfileDownload = () => {
-        downloadProfileImage().then((url) => {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'profile_image.png'; // Assume your server generates this name
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-    };
-
+    // 이미지 삭제 핸들러
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
             setProfileImage(defaultProfile);
+            setUploadedFile(null);
         } catch (error) {
-            setErrorMessage("Failed to delete profile image.");
-            console.error("Delete image error", error);
+            console.error("프로필 이미지 삭제 실패", error);
         }
     };
 
-    const handleSave = async () => {
-        let updateData = { nickname };
-        if (password) updateData.password = password;
+    // 이미지 다운로드 핸들러
+    const handleProfileDownload = async () => {
+        const downloadUrl = await downloadProfileImage();
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'downloaded_profile_image.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
+    // 수정 완료 버튼 활성화 조건
+    const isSaveDisabled = 
+        (!nickname.trim() && !uploadedFile && !password && !confirmPassword) ||
+        (password !== confirmPassword);
+
+    // 저장 핸들러
+    const handleSave = async () => {
         try {
-            if (profileImage !== user?.image && profileImage !== defaultProfile) {
-                const formData = new FormData();
-                formData.append("file", fileInputRef.current.files[0]);
-                await updateProfileImage(formData); // 업데이트 API 호출
+            if (uploadedFile) {
+                await updateProfileImage(uploadedFile);
             }
+
+            const updateData = {
+                nickname: nickname || null,
+                newPassword: password || null,
+                newPasswordConfirm: confirmPassword || null
+            };
+
             await updateUserInfo(updateData);
-            updateMainScreen(); // 메인 화면 업데이트 함수 호출
-            onClose(); // 모달 닫기
+
+            // 메인 화면 새로고침 없이 상태 업데이트
+            refreshMainScreen(); 
+            onClose();
         } catch (error) {
-            setErrorMessage("Failed to update profile.");
-            console.error("Update profile error", error);
+            console.error("개인정보 수정 실패", error);
         }
     };
 
@@ -218,7 +229,7 @@ const EditProfileModal = ({ user, onClose, updateMainScreen }) => {
             <ModalContainer onClick={(e) => e.stopPropagation()}>
                 <CloseButton onClick={onClose}><FiX /></CloseButton>
                 <h3>개인정보 수정</h3>
-                
+
                 <ProfileSection>
                     <ProfileImage src={profileImage} alt="프로필" />
                     <ProfileActions>
@@ -231,25 +242,22 @@ const EditProfileModal = ({ user, onClose, updateMainScreen }) => {
 
                 <UserInfoContainer>
                     <UserInfoLeft>
-                        <UserInfoText><Label>이름</Label> {user?.name}</UserInfoText>
-                        <UserInfoText><Label>아이디</Label> {user?.userid}</UserInfoText>
-                        <UserInfoText><Label>생년월일</Label> {user?.birth}</UserInfoText>
+                        <UserInfoText><Label>이름:</Label> {user?.name}</UserInfoText>
+                        <UserInfoText><Label>아이디:</Label> {user?.userid}</UserInfoText>
+                        <UserInfoText><Label>생년월일:</Label> {user?.birth}</UserInfoText>
                     </UserInfoLeft>
-
                     <InputContainer>
                         <InputGroup>
-                            <Label>닉네임</Label>
-                            <InputField type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                            <Label>닉네임:</Label>
+                            <InputField type="text" value={nickname} onChange={e => setNickname(e.target.value)} />
                         </InputGroup>
-
                         <InputGroup>
-                            <Label>새 비밀번호</Label>
-                            <InputField type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <Label>새 비밀번호:</Label>
+                            <InputField type="password" value={password} onChange={e => setPassword(e.target.value)} />
                         </InputGroup>
-
                         <InputGroup>
-                            <Label>비밀번호 확인</Label>
-                            <InputField type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                            <Label>비밀번호 확인:</Label>
+                            <InputField type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
                         </InputGroup>
                     </InputContainer>
                 </UserInfoContainer>
