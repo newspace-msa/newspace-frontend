@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import styled from "styled-components";
-
+import { useAuth } from "../../context/AuthContext";
 import defaultProfile from "../../assets/profile.png";
 import userImg from "../../assets/user_image.png";
 import Sidebar from "./sidebar";
@@ -121,28 +121,22 @@ const Divider = styled.div`
 
 const NewsMain = () => {
     // 로그인 상태
-    const [isAuthorized, authorize] = useState(false); 
+    const { isAuthorized, user, logout } = useAuth(); 
     const navigate = useNavigate(); 
 
-    //임시 사용자 데이터
-    const [user, setUser] = useState({
-        name: "김철수",
-        userid: "sssjj",
-        birth: "99-01-01",
-        nickname: "어피치",
-        image: userImg
-    });
+    // //임시 사용자 데이터
+    // const [user, setUser] = useState({
+    //     name: "김철수",
+    //     userid: "sssjj",
+    //     birth: "99-01-01",
+    //     nickname: "어피치",
+    //     image: userImg
+    // });
 
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     const handleLogin = () => {
         navigate('/login');
-    };
-
-    const logout = () => {
-        authorize(false);
-        setUser(null);
-        setDropdownOpen(false);
     };
 
     const dummyNews = [
@@ -180,7 +174,7 @@ const NewsMain = () => {
             <ContentContainer>
                 <NoticeContainer>
                     <Notice />
-                    {isAuthorized ? (
+                    {isAuthorized && user ? (
                         <UserInfoContainer>
                             <UserGreeting>
                                 안녕하세요, <strong>{user.nickname}</strong>님!
