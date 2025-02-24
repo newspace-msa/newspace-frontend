@@ -1,6 +1,8 @@
-import { useState } from 'react'
+// 수정된 코드 (안정적)
+import React, { useState } from 'react';
 import { AuthProvider } from "./context/AuthContext";
-import './App.css'
+import './App.css';
+
 
 import {
   BrowserRouter as Router,
@@ -18,8 +20,8 @@ import NewsDetailPage from './pages/news/newsDetail.jsx';     // 뉴스 상세 �
 
 
 function App() {
-
   return (
+<<<<<<< Updated upstream
     <>
       <AuthProvider> 
         <Router>
@@ -34,7 +36,21 @@ function App() {
         </Router>
       </AuthProvider>
     </>
+=======
+    <AuthProvider> 
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />                       
+          <Route path="/signup" element={<Signup />} />                     
+          <Route path="/news/main" element={<NewsMain />} />                
+          <Route path="/news/:category" element={<NewsCategoryPage />} />   
+          <Route path="/news/:category/:id" element={<NewsDetailPage />} /> 
+        </Routes>
+      </Router>
+    </AuthProvider>
+>>>>>>> Stashed changes
   );
 }
 
 export default App;
+  
