@@ -21,7 +21,6 @@ import NewsDetailPage from './pages/news/newsDetail.jsx';     // 뉴스 상세 �
 
 function App() {
   return (
-<<<<<<< Updated upstream
     <>
       <AuthProvider> 
         <Router>
@@ -36,19 +35,6 @@ function App() {
         </Router>
       </AuthProvider>
     </>
-=======
-    <AuthProvider> 
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />                       
-          <Route path="/signup" element={<Signup />} />                     
-          <Route path="/news/main" element={<NewsMain />} />                
-          <Route path="/news/:category" element={<NewsCategoryPage />} />   
-          <Route path="/news/:category/:id" element={<NewsDetailPage />} /> 
-        </Routes>
-      </Router>
-    </AuthProvider>
->>>>>>> Stashed changes
   );
 }
 

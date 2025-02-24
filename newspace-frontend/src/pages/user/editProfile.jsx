@@ -7,7 +7,7 @@ import {
     updateProfileImage,
     deleteProfileImage,
     updateUserInfoApi
-} from "../../api/userInfoApi";
+} from "../api/userInfoApi";
 
 const Overlay = styled.div`
     position: fixed;
