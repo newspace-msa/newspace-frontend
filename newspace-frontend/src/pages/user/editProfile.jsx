@@ -241,6 +241,13 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
+ // isSaveDisabled는 handleSave 함수 아래 또는 return 직전에 위치해야 함
+const isSaveDisabled = 
+    !nickname.trim() || 
+    (password && !confirmPassword) ||  
+    (password !== confirmPassword) ||  
+    (password && password.length < 4);   
+
     return (
         <Overlay onClick={onClose}>
             <ModalContainer onClick={(e) => e.stopPropagation()}>
