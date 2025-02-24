@@ -1,7 +1,9 @@
+// src/components/Signup.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 import logo from '../../assets/newspace_logo1.png';
+import { signupApi } from '../../api/signupApi'; // signupApi 임포트
 
 function Signup() {
     const [birthYear, setBirthYear] = useState('2000');
@@ -22,25 +24,24 @@ function Signup() {
         navigate('/news/main');
     };
 
-
     // 아이디 중복 확인
     const checkUsernameAvailability = async () => {
         setIsActive(true);
-        console.log('아이디 중복 확인:', username);
-
-        // 예시: 중복 확인 로직 (실제 API 연결 시 수정 필요)
-        if (username === 'alreadytaken') {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/user/check-id?username=${username}`);
+            if (response.status === 200) {
+                alert('사용 가능한 아이디입니다.');
+                setIsUsernameAvailable(true);
+            }
+        } catch (error) {
             alert('이미 사용 중인 아이디입니다.');
             setIsUsernameAvailable(false);
-        } else {
-            alert('사용 가능한 아이디입니다.');
-            setIsUsernameAvailable(true);
         }
         setIsActive(false);
     };
 
     // 회원가입 폼 제출
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
         if (!isUsernameAvailable) {
             alert('아이디 중복 확인을 해주세요.');
@@ -50,10 +51,26 @@ function Signup() {
             alert('비밀번호가 일치하지 않습니다.');
             return;
         }
-        alert('회원가입 완료!');
-        navigate('/news/main');
-    };
 
+        // 회원가입 요청에 필요한 정보
+        const userInfo = {
+            username,
+            password,
+            passwordConfirm: checkPassword,
+            name,
+            nickname,
+            birth: `${birthYear}-${birthMonth}-${birthDay}`
+        };
+
+        try {
+            // 회원가입 API 호출
+            await signupApi(userInfo);
+            alert('회원가입 완료!');
+            navigate('/news/main'); // 성공 시 메인 페이지로 이동
+        } catch (error) {
+            alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
 
     // 년, 월, 일 옵션 생성
     const years = Array.from({ length: 126 }, (_, i) => (2025 - i).toString());
