@@ -149,8 +149,6 @@ const SaveButton = styled.button`
 
 
 
-
-
 const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
@@ -159,6 +157,25 @@ const EditProfileModal = ({ user, onClose }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
+
+    // handleProfileDownload 함수 추가
+    const handleProfileDownload = async () => {
+        try {
+            if (profileImage && profileImage !== defaultProfile) {
+                const link = document.createElement("a");
+                link.href = profileImage;
+                link.download = "profile_image.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("다운로드할 이미지가 없습니다.");
+            }
+        } catch (error) {
+            console.error("❌ [프로필 다운로드 실패]", error);
+            setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
+        }
+    };
 
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
