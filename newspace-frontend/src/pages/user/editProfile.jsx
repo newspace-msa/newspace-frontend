@@ -5,7 +5,7 @@ import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
 import { updateUserInfo } from "../../api/userinfoApi"; // API 호출 함수 임포트 - 영서 개인정보수정 api
 //프로필 이미지지 API
-import { createProfileImage, updateProfileImage, deleteProfileImage, downloadProfileImage } from "../../api/profileApi";
+import { createProfileImage, updateProfileImage, deleteProfileImage, } from "../../api/profileApi";
 
 // editProfile.jsx 상단에 BASE_URL 추가
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');

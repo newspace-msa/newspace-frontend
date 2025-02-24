@@ -30,6 +30,7 @@
     border-radius: 20px;
     padding: 20px;
     width: 350px;
+    height: 450px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     text-align: center;
 }
@@ -92,4 +93,11 @@
     width: 90%;
     margin: 20px auto;
 }
+
+.signup-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;  /* 로그인 버튼과 간격 조정 */
+}
+
 

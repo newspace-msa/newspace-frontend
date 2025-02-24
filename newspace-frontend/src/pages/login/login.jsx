@@ -48,7 +48,9 @@ function Login() {
                         <input type="password" id="password" name="password" required className="login-input-text" onChange={e => setPassword(e.target.value)} />
                     </div>
                     <button type="submit" className="login-button" id="login-button">로그인</button>
-                    <a href="/signup" className="login-link">회원가입</a>
+                    <div className="signup-container">
+                        <a href="/signup" className="login-link">회원가입</a>
+                    </div>
                 </form>
             </div>
         </div>
