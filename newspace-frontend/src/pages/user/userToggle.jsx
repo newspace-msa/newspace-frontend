@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { FiLogOut } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 
 import EditProfileModal from "./editProfile";
 
@@ -77,8 +78,13 @@ const LogoutIcon = styled(FiLogOut)`
     margin-bottom: 5px;
 `;
 
-const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
+const UserToggle = ({ isDropdownOpen, profile, user, logout }) => {
     const [isModalOpen, setModalOpen] = useState(false); // 개인정보수정 modal
+
+    const handleLogout = () => {
+        logout();  // 로그아웃 함수 실행
+        window.location.reload();  // 새로고침하여 상태 초기화
+    };
 
     return (
         <>
@@ -88,7 +94,7 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
                 <EditProfileButton onClick={() => setModalOpen(true)}>
                     개인정보 수정
                 </EditProfileButton>
-                <LogoutContainer onClick={logout}>
+                <LogoutContainer onClick={handleLogout}>
                     <LogoutIcon />
                     logout
                 </LogoutContainer>

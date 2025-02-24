@@ -31,3 +31,22 @@ export const loginApi = async (username, password) => {
         throw error;
     }
 };
+
+
+export const logoutApi = async () => {
+    const url = `${BASE_URL}/api/user/logout`;
+    console.log("로그아웃 요청 POST URL:", url);
+
+    try {
+        const response = await axios.post(url, {}, { withCredentials: true });
+
+        console.log("로그아웃 응답 데이터:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("로그아웃 API 호출 실패:", error);
+        if (error.response) {
+            console.error("로그아웃 실패 응답 데이터:", error.response.data);
+        }
+        throw error;
+    }
+};
