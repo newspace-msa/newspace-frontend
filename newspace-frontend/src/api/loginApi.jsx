@@ -19,8 +19,6 @@ export const loginApi = async (username, password) => {
         console.log("로그인 응답 데이터:", response.data); // 응답 데이터 로깅
         console.log("로그인 성공 응답 헤더:", response.headers); // 응답 헤더 로깅
 
-        // 로그인 성공 시 응답 데이터에서 토큰을 로컬 스토리지에 저장
-        localStorage.setItem('accessToken', response.data.accessToken);
         return response.data; // 로그인 성공 응답 데이터 반환
     } catch (error) {
         console.error("로그인 API 호출 실패:", error);

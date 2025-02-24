@@ -29,6 +29,9 @@ export const AuthProvider = ({ children }) => {
         if (storedAuth) {
             setIsAuthorized(true);
             fetchUserInfo(); 
+        } else {
+            console.log("🛑 로그인되지 않은 상태");
+            setUser(null); // 로그아웃 상태일 경우 사용자 정보 초기화
         }
     }, []);
 

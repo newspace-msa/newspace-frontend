@@ -83,7 +83,7 @@ const UserToggle = ({ isDropdownOpen, profile, user, logout }) => {
 
     const handleLogout = () => {
         logout();  // 로그아웃 함수 실행
-        window.location.reload();  // 새로고침하여 상태 초기화
+        //window.location.reload();  // 새로고침하여 상태 초기화
     };
 
     return (
