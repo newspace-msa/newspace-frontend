@@ -36,14 +36,13 @@ const PageContainer = styled.div`
 const NoticeContainer = styled.div`
     position: fixed; 
     top: 20px; 
-    left: calc(${SidebarWidth} + 10px);
+    left: 10;
     background-color: #ffffff; 
-    z-index: 800; 
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 25px;
-    z-index: 300;
+    z-index: 10;
 `;
 
 const UserInfoContainer = styled.div`
@@ -53,7 +52,7 @@ const UserInfoContainer = styled.div`
     display: flex;
     align-items: center;
     gap: 10px;
-    z-index: 800;
+    z-index: 20;
 `;
 
 const UserGreeting = styled.span`
@@ -90,7 +89,9 @@ const LoginText = styled.span`
 `;
 
 const ToggleContainer = styled.div`
-    position: relative;  
+    position: fixed;  
+    top: 60px;
+    right: 90px;
     z-index: 1100;  
 `;
 
@@ -122,7 +123,7 @@ const Divider = styled.div`
     width: 85%;
     height: 2px;
     background-color: #ddd;
-    z-index: 100;
+    z-index: -1;
 `;
 
 
@@ -212,9 +213,13 @@ const NewsMain = () => {
         <PageContainer>
             <Sidebar />
             <ContentContainer>
+                
                 <NoticeContainer>
                     <Notice />
+                </NoticeContainer>
+
                     {isAuthorized && user ? (
+                        <>
                         <UserInfoContainer>
                             <UserGreeting>
                                 안녕하세요, <strong>{user.nickname}</strong>님!
@@ -225,19 +230,21 @@ const NewsMain = () => {
                                 alt="user" 
                                 onClick={toggleDropdown}
                             />
-                            <ToggleContainer>
+                        </UserInfoContainer>
+
+                        <ToggleContainer>
                             <UserToggle 
                                 isDropdownOpen={isDropdownOpen} 
                                 user={user} 
                                 profile={defaultProfile} 
                                 logout={logout} 
                             />
-                            </ToggleContainer>
-                        </UserInfoContainer>
+                        </ToggleContainer>
+                    </>
                     ) : (
                         <LoginText onClick={handleLogin}>로그인</LoginText>  // 로그인 함수 호출로 업데이트
                     )}
-                </NoticeContainer>
+                
                 <NewsContainer>
                     <NewsKeyword />
                     <a href="https://www.yna.co.kr/view/AKR20250217150300001" target="_blank" rel="noopener noreferrer">
