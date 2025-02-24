@@ -1,6 +1,7 @@
 // src/api/profileApi.jsx
 import axios from 'axios';
 
+// 이게 틀렸나¿ㅜ。ㅜㅠㅠㅠㅠ
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 const profileUrl = `${BASE_URL}/api/user/profile`;
 const imageUrl = `${BASE_URL}/api/user/image`;
@@ -66,3 +67,4 @@ export const getProfileImageUrl = (filePath) => {
     }
     return `${imageUrl}/20250224/355846841290080.png`;
 };
+    
