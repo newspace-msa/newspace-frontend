@@ -1,8 +1,27 @@
 import { useParams, Link} from "react-router-dom";
-import styled from "styled-components";
+import { useEffect, useState } from "react";
+import styled, { keyframes } from "styled-components";
 
+import { fetchNewsByCategory } from "../../api/newsApi";
 
 import Sidebar from "./sidebar";
+
+// 로딩 스피너 애니메이션
+const spin = keyframes`
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+`;
+
+const LoadingSpinner = styled.div`
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #13767b; 
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    animation: ${spin} 1s linear infinite;
+    margin: 20px auto;
+`;
+
 
 const Container = styled.div`
     position: absolute;
@@ -69,90 +88,60 @@ const TitleLink = styled(Link)`
 
 const NewsCategoryPage = () => {
     const { category } = useParams(); 
+    const [newsList, setNewsList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // 뉴스 더미 데이터
-    const newsList = [
-        {
-            id: 1,
-            title: "Fed Cuts Interest Rates to 2.5%",
-            content: "The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.",
-            date: "2002-02-21",
-            source: "The New York Times",
-            link: "https://www.nytimes.com/2002/02/21/business/fed-cuts-interest-rates-to-2.5.html"
-        },
-        { 
-            id: 2,
-            title: "Tech Giants Face Antitrust Scrutiny",
-            content: "Regulators in the US and EU are looking into whether major tech firms have engaged in anti-competitive behavior.",
-            date: "2024-02-20",
-            source: "BBC News",
-            link: "https://www.bbc.com/news/business-tech"
-        },
-        { 
-            id: 3,
-            title: "Global Markets Rally on Strong Earnings",
-            content: "Stock markets surged worldwide following better-than-expected earnings reports from leading companies.",
-            date: "2024-02-19",
-            source: "CNBC",
-            link: "https://www.cnbc.com/global-markets"
-        },
-        { 
-            id: 4,
-            title: "Climate Change Policies Under Debate",
-            content: "World leaders gather to discuss the future of climate change policies in a high-stakes summit.",
-            date: "2024-02-18",
-            source: "The Guardian",
-            link: "https://www.theguardian.com/environment/climate-policy"
-        },
-        {   
-            id: 5,
-            title: "AI Breakthrough in Medical Diagnosis",
-            content: "A new AI model has been developed that can detect diseases with higher accuracy than human doctors.",
-            date: "2024-02-17",
-            source: "MIT Technology Review",
-            link: "https://www.technologyreview.com/ai-medicine"
-        },
-        {   
-            id: 6,
-            title: "Electric Vehicles Sales Hit Record High",
-            content: "Sales of electric vehicles reached an all-time high last quarter, driven by government incentives and innovation.",
-            date: "2024-02-16",
-            source: "Bloomberg",
-            link: "https://www.bloomberg.com/ev-sales"
-        },
-        { 
-            id: 7,
-            title: "NASA Announces New Mars Mission",
-            content: "NASA has revealed plans for a new mission to explore potential signs of life on Mars.",
-            date: "2024-02-15",
-            source: "NASA",
-            link: "https://mars.nasa.gov/new-mission"
-        },
-        { 
-            id: 8,
-            title: "Cryptocurrency Market Sees Major Fluctuations",
-            content: "Bitcoin and Ethereum prices experienced significant volatility, prompting concerns among investors.",
-            date: "2024-02-14",
-            source: "CoinDesk",
-            link: "https://www.coindesk.com/crypto-market"
-        },
-        { 
-            id: 9,
-            title: "Major Cities Implement New Traffic Laws",
-            content: "Several global cities have introduced new regulations aimed at reducing traffic congestion and pollution.",
-            date: "2024-02-13",
-            source: "Reuters",
-            link: "https://www.reuters.com/traffic-laws"
-        },
-        { 
-            id: 10,
-            title: "Advances in Quantum Computing Announced",
-            content: "Scientists have made a breakthrough in quantum computing, bringing commercial applications closer to reality.",
-            date: "2024-02-12",
-            source: "Wired",
-            link: "https://www.wired.com/quantum-computing"
+    useEffect(() => {
+        const fetchNews = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                console.log(`API 요청 시작 (category: ${category})`);
+                const data = await fetchNewsByCategory(category); // API 호출
+                setNewsList(data); // 뉴스 리스트 상태 업데이트
+
+                // localStorage에 저장
+                localStorage.setItem(`news_${category}`, JSON.stringify(data));
+                console.log(`localStorage에 저장된 데이터 (category: ${category}):`, data);
+            } catch (error) {
+                setError("뉴스 데이터를 불러오는 중 오류가 발생했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // localStorage에서 기존 데이터 확인
+        const savedData = localStorage.getItem(`news_${category}`);
+        
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            console.log(`localStorage에서 불러온 데이터 (category: ${category}):`, parsedData);
+            setNewsList(parsedData);
+            setLoading(false);
         }
-    ];
+    
+        // localStorage에 데이터가 없을 때만 API 호출하도록 변경
+        if (!savedData) {
+            console.log(`API 호출 필요, localStorage 데이터 없음 (category: ${category})`);
+            fetchNews();
+        }
+
+
+
+        return () => {
+            // 상세 페이지가 아닐 때 localStorage 삭제
+            const currentPath = decodeURIComponent(window.location.pathname);  
+            console.log("현재 페이지 디코딩된 경로:", currentPath);
+
+            if (!currentPath.startsWith(`/news/${category}/`) && currentPath !== `/news/${category}`) {
+                console.log("LocalStorage 데이터 삭제:", `news_${category}`);
+                localStorage.removeItem(`news_${category}`);
+            }
+        };
+    }, [category]);
+
+    
 
     return (
         <>
@@ -160,6 +149,15 @@ const NewsCategoryPage = () => {
         <Container>
                 <Title>과거의 오늘 </Title>
                 <Title2>가장 많이 주목받은 <HighlightedText>{category}</HighlightedText> 뉴스</Title2>
+
+                {/* 로딩 스피너 표시 */}
+                {loading && <LoadingSpinner />}
+
+                {/* 에러 메시지 표시 */}
+                {error && <p style={{ color: "red" }}>{error}</p>}
+
+                {/* 뉴스 목록 출력 */}
+                {!loading && !error && newsList.length > 0 ? (
                 <NewsTable>
                     <thead>
                         <tr>
@@ -169,8 +167,8 @@ const NewsCategoryPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {newsList.map((news, index) => (
-                            <TableRow key={index}>
+                        {newsList.map((news) => (
+                            <TableRow key={news.id}>
                                 <TableData>
                                     <TitleLink to={`/news/${encodeURIComponent(category)}/${news.id}`}>
                                         {news.title}
@@ -182,6 +180,9 @@ const NewsCategoryPage = () => {
                         ))}
                     </tbody>
                 </NewsTable>
+                ) : (
+                    !loading && !error && <p>해당 카테고리의 뉴스가 없습니다.</p>
+                )}
             </Container>
         </>
     );

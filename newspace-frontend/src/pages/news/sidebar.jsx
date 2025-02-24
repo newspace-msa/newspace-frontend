@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { fetchCategories, addCategory, updateCategory, deleteCategory } from "../../api/categoryApi";
 
 import logo1 from "../../assets/newspace_logo1.png"; 
-import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Briefcase, X  } from "lucide-react";
+import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Briefcase, 
+        Home, Settings, Calendar, Star, Bell, BarChart, Shield, Heart, X 
+} from "lucide-react";
 
 const SidebarContainer = styled.div`
     position: fixed;
@@ -52,14 +55,14 @@ const AddCategoryButton = styled.div`
     margin-top: auto;
     margin-bottom: 40px;
     padding: 15px;
-    width: 15px;  /* 버튼 크기 조정 */
-    height: 15px; /* 버튼 크기 조정 */
+    width: 15px; 
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     background-color: #1D7F81;
-    border-radius: 50px; /* 더 둥글게 조정 */
+    border-radius: 50px; 
     color: white;
     transition: 0.3s ease;
 
@@ -108,9 +111,11 @@ const CloseButton = styled.div`
 `;
 
 const IconGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); // 1줄에 8개
     gap: 10px;
+    justify-items: center;
+    padding: 10px;
 `;
 
 const IconOption = styled.div`
@@ -182,62 +187,136 @@ const iconOptions = [
     { name: "Book", component: <Book size={24} /> },
     { name: "Newspaper", component: <Newspaper size={24} /> },
     { name: "Globe", component: <Globe size={24} /> },
-    { name: "Briefcase", component: <Briefcase size={24} /> }
+    { name: "Briefcase", component: <Briefcase size={24} /> },
+    { name: "Home", component: <Home size={24} /> },
+    { name: "BarChart", component: <BarChart size={24} /> },
+    { name: "Settings", component: <Settings size={24} /> },
+    { name: "Calendar", component: <Calendar size={24} /> },
+    { name: "Star", component: <Star size={24} /> },
+    { name: "Bell", component: <Bell size={24} /> },
+    { name: "Shield", component: <Shield size={24} /> },
+    { name: "Heart", component: <Heart size={24} /> }
 ];
+
+const iconMap = iconOptions.reduce((acc, icon) => {
+    acc[icon.name] = icon.component;
+    return acc;
+}, {});
 
 
 const Sidebar = () => {
-    const [categories, setCategories] = useState([
-        { name: "정치", icon: <Landmark size={24} /> },
-        { name: "경제", icon: <Banknote size={24} /> },
-        { name: "사회", icon: <Users size={24} /> },
-        { name: "문화", icon: <Building size={24} /> },
-    ]);
-
+    const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [newCategory, setNewCategory] = useState("");
     const [selectedIcon, setSelectedIcon] = useState(null);
-
+    const [editingCategory, setEditingCategory] = useState(null);
     const [popup, setPopup] = useState(null);
     const categoryRefs = useRef({}); 
 
+    //카테고리 조회
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const data = await fetchCategories();
+                setCategories(data);
+            } catch (error) {
+                console.error("카테고리 불러오기 오류:", error);
+            }
+        };
+        loadCategories();
+    }, []);
+
+    // 카테고리 추가 & 수정
+    const handleSave = async () => {
+        if (!newCategory || !selectedIcon) return;
+        
+        try {
+            if (editingCategory) {
+                // 수정
+                const updatedCategory = await updateCategory(editingCategory.id, newCategory, selectedIcon.name);
+                setCategories(categories.map(cat => (cat.id === updatedCategory.id ? updatedCategory : cat)));
+            } else {
+                // 추가
+                if (categories.length >= 8) {
+                    alert("최대 8개의 카테고리만 생성 가능합니다.");
+                    return;
+                }
+                const newCat = await addCategory(newCategory, selectedIcon.name);
+                setCategories([...categories, newCat]);
+            }
+        } catch (error) {
+            console.error("카테고리 추가/수정 실패:", error);
+        } finally {
+            setShowModal(false);
+            setNewCategory("");
+            setSelectedIcon(null);
+            setEditingCategory(null);
+        }
+    };
+
+    const handleDelete = async (categoryId) => {
+        try {
+            await deleteCategory(categoryId);
+            setCategories(categories.filter(category => category.id !== categoryId));
+            closePopup();
+        } catch (error) {
+            console.error("카테고리 삭제 실패", error);
+        }
+    };
+
+    const popupRef = useRef(null);
     // 카테고리 우클릭시 팝업창 뜨기
     const handleRightClick = (event, category) => {
         event.preventDefault();
-        if (categoryRefs.current[category.name]) {
-            const rect = categoryRefs.current[category.name].getBoundingClientRect();
-            setPopup({
-                x: 100,
-                y: rect.top + window.scrollY + 10, 
+        console.log("우클릭 이벤트 감지됨:", category);
+
+        if (categoryRefs.current[category.id]) {
+            const rect = categoryRefs.current[category.id].getBoundingClientRect();
+            console.log("카테고리 위치:", rect);
+
+            const newPopup = {
+                x: rect.left + 40,
+                y: rect.top + window.scrollY + 10,
                 category,
-            });
+            };
+
+            popupRef.current = newPopup; // useRef로 상태 유지
+            setPopup(newPopup);
+
+            setTimeout(() => {
+                console.log("popup 상태 업데이트됨:", popupRef.current);
+            }, 100);
         }
     };
+
+    useEffect(() => {
+        console.log("popup 상태 변경 감지:", popup);
+    }, [popup]);
+    
 
     const closePopup = () => setPopup(null);
 
     // 팝업 닫기 이벤트 핸들러
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (popup && !event.target.closest(".context-popup")) {
-                setPopup(null);
-            }
+            if (!popupRef.current || event.target.closest(".context-popup")) return;
+            console.log("팝업 바깥 클릭 감지됨, 팝업 닫기");
+            setPopup(null);
+            popupRef.current = null;
         };
-
-        document.addEventListener("click", handleClickOutside);
+    
+        if (popup) {
+            setTimeout(() => { // 팝업 생성 후 바깥 클릭 감지 약간 늦추기
+                document.addEventListener("click", handleClickOutside);
+            }, 50);
+        }
+    
         return () => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [popup]);
+    
 
-    const addCategory = () => {
-        if (newCategory && selectedIcon) {
-            setCategories([...categories, { name: newCategory, icon: selectedIcon }]);
-            setNewCategory("");
-            setSelectedIcon(null);
-            setShowModal(false);
-        }
-    };
 
     return (
         <SidebarContainer>
@@ -246,27 +325,43 @@ const Sidebar = () => {
                 <SidebarLogo src={logo1} alt="Logo" />
             </Link>
             <div style={{ position: "relative" }} onClick={closePopup}>
-            {categories.map((category, index) => (
+            {categories.map((category) => (
                 <SidebarItem 
-                    key={index} 
+                    key={category.id} 
                     to={`/news/${encodeURIComponent(category.name)}`}
-                    ref={(el) => (categoryRefs.current[category.name] = el)}
+                    ref={(el) => (categoryRefs.current[category.id] = el)}
                     onContextMenu={(e) => handleRightClick(e, category)}
                 >
-                    {category.icon}
+                    {iconMap[category.icon] || <Plus size={24} />}
                     <SidebarText>{category.name}</SidebarText>
                 </SidebarItem>
             ))}
             {popup && (
-                <ContextPopup className="context-popup" style={{ top: popup.y, left: popup.x }}>
-                    <ContextPopupItem onClick={() => alert(`수정: ${popup.category.name}`)}>수정</ContextPopupItem>
-                    <ContextPopupItem onClick={() => alert(`삭제: ${popup.category.name}`)}>삭제</ContextPopupItem>
-                </ContextPopup>
-            )}
-            </div>
+            <ContextPopup 
+                className="context-popup" 
+                style={{ 
+                    top: `${Math.max(popup.y, 50)}px`, 
+                    left: `${Math.max(popup.x, 10)}px`
+                }}
+            >
+                <ContextPopupItem onClick={() => {
+                    setEditingCategory(popup.category);
+                    setNewCategory(popup.category.name);
+                    setSelectedIcon(iconOptions.find(icon => icon.name === popup.category.icon));
+                    setShowModal(true);
+                }}>
+                    수정
+                </ContextPopupItem>
+                <ContextPopupItem onClick={() => handleDelete(popup.category.id)}>삭제</ContextPopupItem>
+            </ContextPopup>
+        )}
+                </div>
 
-            {/* + 버튼 추가 */}
-            <AddCategoryButton onClick={() => setShowModal(true)}>
+            {/* 추가 버튼(카테고리 최대 8개 제한) */}
+            <AddCategoryButton 
+                onClick={() => setShowModal(true)} 
+                disabled={categories.length >= 8}
+            >
                 <Plus size={40} />
             </AddCategoryButton>
 
@@ -277,7 +372,7 @@ const Sidebar = () => {
                         <CloseButton onClick={() => setShowModal(false)}>
                             <X size={24} />
                         </CloseButton>
-                        <h3>카테고리 추가</h3>
+                        <h3>{editingCategory ? "카테고리 수정" : "카테고리 추가"}</h3>
                         <Input
                             type="text"
                             placeholder="카테고리명 입력"
@@ -286,12 +381,12 @@ const Sidebar = () => {
                         />
                         <IconGrid>
                             {iconOptions.map((icon) => (
-                                <IconOption key={icon.name} selected={selectedIcon === icon.component} onClick={() => setSelectedIcon(icon.component)}>
+                                <IconOption key={icon.name} selected={selectedIcon === icon} onClick={() => setSelectedIcon(icon)}>
                                     {icon.component}
                                 </IconOption>
                             ))}
                         </IconGrid>
-                        <AddButton onClick={addCategory}>추가</AddButton>
+                        <AddButton onClick={handleSave}>{editingCategory ? "수정" : "추가"}</AddButton>
                     </ModalContainer>
                 </ModalOverlay>
             )}

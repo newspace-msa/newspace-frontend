@@ -1,6 +1,8 @@
-import { useParams, Link} from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { fetchNewsByCategory } from "../../api/newsApi";
 
 import Sidebar from "./sidebar";
 
@@ -68,44 +70,57 @@ const NewsLink = styled.a`
 `;
 
 const NewsDetailPage = () => {
-    const { category, id } = useParams();
+    const { category, id } = useParams(); // URL에서 category, id 값 가져오기
+    const [newsData, setNewsData] = useState(null);
 
-    const newsData = {
-        id: 1,
-        title: "Fed Cuts Interest Rates to 2.5%",
-        content: "The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.The Federal Reserve cut interest rates for the fifth time in six months, lowering the federal funds rate to 2.5%.",
-        date: "2002-02-21",
-        source: "The New York Times",
-        link: "https://www.nytimes.com/2002/02/21/business/fed-cuts-interest-rates-to-2.5.html"
-    };
+    useEffect(() => {
+        const storedNews = localStorage.getItem(`news_${category}`);
+        console.log("LocalStorage 저장된 데이터:", storedNews); 
+
+        if (storedNews) {
+            const newsList = JSON.parse(storedNews);
+            const selectedNews = newsList.find((news) => String(news.id) === id);
+
+            if (selectedNews) {
+                setNewsData(selectedNews);
+            } else {
+                setNewsData(null);
+            }
+        }
+    }, [category, id]);
+
 
     return (
         <>
             <Sidebar />
             <Container>
-                <Title>{newsData.title}</Title>
-                <DetailBox>
-                    <DetailRow>
-                        <DetailLabel>날짜</DetailLabel>
-                        <DetailValue>{newsData.date}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>출처</DetailLabel>
-                        <DetailValue>{newsData.source}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>내용</DetailLabel>
-                        <DetailValue>{newsData.content}</DetailValue>
-                    </DetailRow>
-                    <DetailRow>
-                        <DetailLabel>뉴스 링크</DetailLabel>
-                        <DetailValue>
-                            <NewsLink href={newsData.link} target="_blank" rel="noopener noreferrer">
-                                {newsData.link}
-                            </NewsLink>
-                        </DetailValue>
-                    </DetailRow>
-                </DetailBox>
+                {newsData && (
+                    <>
+                        <Title>{newsData.title}</Title>
+                        <DetailBox>
+                            <DetailRow>
+                                <DetailLabel>날짜</DetailLabel>
+                                <DetailValue>{newsData.date}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>출처</DetailLabel>
+                                <DetailValue>{newsData.source}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>내용</DetailLabel>
+                                <DetailValue>{newsData.content}</DetailValue>
+                            </DetailRow>
+                            <DetailRow>
+                                <DetailLabel>뉴스 링크</DetailLabel>
+                                <DetailValue>
+                                    <NewsLink href={newsData.link} target="_blank" rel="noopener noreferrer">
+                                        {newsData.link}
+                                    </NewsLink>
+                                </DetailValue>
+                            </DetailRow>
+                        </DetailBox>
+                    </>
+                )}
             </Container>
         </>
     );
