@@ -1,9 +1,9 @@
-//profileApi.jsx
 // src/api/profileApi.jsx
 import axios from 'axios';
 
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 const profileUrl = `${BASE_URL}/api/user/profile`;
+const imageBaseUrl = `${BASE_URL}/api/user/image`;
 
 // 📌 프로필 사진 등록 (POST)
 export const createProfileImage = async (file) => {
@@ -60,9 +60,10 @@ export const deleteProfileImage = async () => {
 };
 
 // 📌 프로필 사진 다운로드 (GET)
-export const downloadProfileImage = async () => {
+export const downloadProfileImage = async (day, filename) => {
     try {
-        const response = await axios.get(profileUrl, {
+        const imageUrl = `${imageBaseUrl}/${day}/${filename}`;
+        const response = await axios.get(imageUrl, {
             responseType: 'blob',
             withCredentials: true
         });

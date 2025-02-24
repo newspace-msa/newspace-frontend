@@ -151,14 +151,19 @@ const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
+    const [profileImage, setProfileImage] = useState(user?.profileImage 
+        ? `${BASE_URL}/api/user/image/${user.profileImage}` 
+        : defaultProfile
+    );
     const [errorMessage, setErrorMessage] = useState(""); // 영서 
+    const [uploadedFile, setUploadedFile] = useState(null);//영서서
     const fileInputRef = useRef(null);
 
     // 프로필 업로드 핸들러
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
+            setUploadedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileImage(reader.result);
@@ -168,8 +173,15 @@ const EditProfileModal = ({ user, onClose }) => {
     };
 
     // 프로필 삭제 핸들러
-    const handleProfileDelete = () => {
-        setProfileImage(defaultProfile);
+    const handleProfileDelete = async () => {
+        try {
+            await deleteProfileImage();
+            setProfileImage(defaultProfile); // 기본 프로필 이미지 적용
+            setUploadedFile(null);
+        } catch (error) {
+            console.error(" [프로필 삭제 실패]", error);
+            setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
     // 프로필 다운로드 핸들러
@@ -225,8 +237,10 @@ const handleSave = async () => {
 
         // 🎯 응답(Response) 형식에 맞게 상태 업데이트
         setNickname(updatedUserInfo.nickname);
-        setProfileImage(updatedUserInfo.profileImage?.trim() ? updatedUserInfo.profileImage : defaultProfile);
-
+        setProfileImage(updatedUserInfo.profileImage?.trim() 
+            ? `${BASE_URL}/api/user/image/${updatedUserInfo.profileImage}` 
+            : defaultProfile
+        );
         alert("개인정보가 수정되었습니다.");
 
         // 모달 닫기
