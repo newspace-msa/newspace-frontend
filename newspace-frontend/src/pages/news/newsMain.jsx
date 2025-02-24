@@ -8,6 +8,7 @@ import Notice from "./notice";
 import NewsKeyword from "./keywords";
 import NewsArticle from "./article";
 import UserToggle from "../user/userToggle";
+import EditProfileModal from "../user/editProfile"; 
 import { useNavigate } from 'react-router-dom';
 
 
