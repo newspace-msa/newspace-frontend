@@ -1,14 +1,8 @@
-// src/context/AuthContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { getUserInfo } from "../api/userinfoApi";
 
 // AuthContext 생성
-const AuthContext = createContext({
-    isAuthorized: false,
-    user: null,
-    login: () => {},
-    logout: () => {}
-});
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -20,13 +14,7 @@ export const AuthProvider = ({ children }) => {
             const userInfo = await getUserInfo();
             if (userInfo) {
                 setUser(userInfo);
-                setIsAuthorized(true);
                 localStorage.setItem("user", JSON.stringify(userInfo)); // 사용자 정보 저장
-            } else {
-                setIsAuthorized(false);
-                setUser(null);
-                localStorage.removeItem("isAuthorized");
-                localStorage.removeItem("user");
             }
         } catch (error) {
             console.error("사용자 정보 조회 실패:", error);
@@ -42,7 +30,8 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = async () => {
+
+    const login = async() => {
         setIsAuthorized(true);
         localStorage.setItem("isAuthorized", "true");
         await fetchUserInfo(); 
@@ -50,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         setIsAuthorized(false);
-        setUser(null); 
+        setUser(null); // 로그아웃 시 사용자 정보 삭제
         localStorage.removeItem("isAuthorized");
         localStorage.removeItem("user");
     };

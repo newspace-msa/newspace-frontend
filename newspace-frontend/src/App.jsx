@@ -1,8 +1,6 @@
-// 수정된 코드 (안정적)
-import React, { useState } from 'react';
+import { useState } from 'react'
 import { AuthProvider } from "./context/AuthContext";
-import './App.css';
-
+import './App.css'
 
 import {
   BrowserRouter as Router,
@@ -20,6 +18,7 @@ import NewsDetailPage from './pages/news/newsDetail.jsx';     // 뉴스 상세 �
 
 
 function App() {
+
   return (
     <>
       <AuthProvider> 
@@ -39,4 +38,3 @@ function App() {
 }
 
 export default App;
-  

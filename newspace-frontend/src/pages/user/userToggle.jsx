@@ -108,4 +108,3 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
 
 export default UserToggle;
 
-

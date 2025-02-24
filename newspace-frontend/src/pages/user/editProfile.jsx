@@ -2,12 +2,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
-import {
-    createProfileImage,
-    updateProfileImage,
-    deleteProfileImage,
-    updateUserInfoApi
-} from "../api/userInfoApi";
+//import { updateUserInfoApi, deleteProfileImage } from "../api/userinfoApi.jsx";
 
 const Overlay = styled.div`
     position: fixed;
@@ -150,66 +145,64 @@ const EditProfileModal = ({ user, onClose }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
-    const [isProfileImageExist, setIsProfileImageExist] = useState(!!user?.image);
-    const [errorMessage, setErrorMessage] = useState("");
-
     const fileInputRef = useRef(null);
 
-    // 📌 프로필 사진 업로드 핸들러
-    const handleProfileUpload = async (event) => {
+    // 프로필 업로드 핸들러
+    const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            try {
-                const response = isProfileImageExist
-                    ? await updateProfileImage(file)
-                    : await createProfileImage(file);
-
-                setProfileImage(`${response.file}?t=${new Date().getTime()}`);
-                setIsProfileImageExist(true);
-                alert(response.message);
-            } catch (error) {
-                setErrorMessage("프로필 사진 업로드 실패");
-            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    // 📌 프로필 사진 삭제 핸들러
-    const handleProfileDelete = async () => {
-        try {
-            const response = await deleteProfileImage();
-            setProfileImage(defaultProfile);
-            setIsProfileImageExist(false);
-            alert(response.message);
-        } catch (error) {
-            setErrorMessage("프로필 사진 삭제 실패");
-        }
+    // 프로필 삭제 핸들러
+    const handleProfileDelete = () => {
+        setProfileImage(defaultProfile);
     };
 
-    // 📌 저장 핸들러
+    // 프로필 다운로드 핸들러
+    const handleProfileDownload = () => {
+        const link = document.createElement("a");
+        link.href = profileImage;
+        link.download = "profile_image.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // 수정 완료 버튼 활성화 조건
+    const isSaveDisabled = !nickname || (!!password && !confirmPassword) 
+
+    // 저장 핸들러
     const handleSave = async () => {
-        // 유효성 검사
-        if (!nickname.trim()) {
-            setErrorMessage("닉네임을 입력해주세요.");
+        // 아무것도 변경되지 않은 경우 모달 닫기
+        if (
+            nickname === user.nickname &&
+            profileImage === user.image &&
+            !password &&
+            !confirmPassword
+        ) {
+            onClose();
             return;
         }
-        if (password || confirmPassword) {
-            if (password !== confirmPassword) {
-                setErrorMessage("비밀번호가 일치하지 않습니다.");
-                return;
-            }
-            if (password.length < 4) {
-                setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
-                return;
-            }
-        }
 
-        try {
-            await updateUserInfoApi({ nickname, newPassword: password, newPasswordConfirm: confirmPassword });
-            alert("개인정보가 수정되었습니다.");
-            onClose();
-        } catch (error) {
-            setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
-        }
+        // 닉네임만 수정 && 닉네임 공백 아닐시
+        // 프로필 사진만 수정(업로드, 삭제 시)
+        // 비밀번호만 수정
+
+        // 닉네임 수정 && 프로필 사진 수정
+        // 닉네임 && 비밀번호 수정
+        // 프로필 사진 && 비밀번호 수정
+
+        // 닉네임 수정 && 프로필 사진 수정 && 비밀번호 수정
+
+        // 비밀번호 수정할 때 조건 부합하지 않을 때 에러메세지 출력하도록!
+        // ex) 비밀번호 입력 안하고 비밀번호 확인만 입력하면 "비밀번호를 입력해주세요!" 이런식으로 아래에 빨간 에러메세지 뜨게~
+
     };
 
     return (
