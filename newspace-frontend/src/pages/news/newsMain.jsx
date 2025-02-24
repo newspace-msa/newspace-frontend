@@ -168,6 +168,9 @@ const NewsMain = () => {
 
     const newsList = [...dummyNews, ...dummyNews];
 
+    console.log("🟢 현재 로그인 상태:", isAuthorized);
+    console.log("🟢 현재 사용자 정보:", user);
+
     return (
         <PageContainer>
             <Sidebar />
@@ -180,7 +183,7 @@ const NewsMain = () => {
                                 안녕하세요, <strong>{user.nickname}</strong>님!
                             </UserGreeting>
                             <UserIconContainer 
-                                src={user.profileImage || defaultProfile} 
+                                src={user.profileImage ? `${BASE_URL}/${user.profileImage}` : defaultProfile} 
                                 alt="user" 
                                 onClick={() => setDropdownOpen(!isDropdownOpen)} 
                             />
