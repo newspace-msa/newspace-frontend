@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
+import { FaPlus } from "react-icons/fa"; 
+
+import { fetchKeywords, addKeyword, updateKeyword } from "../../api/keywordApi";
+
 const SectionContainer = styled.div`
     width: 450px;
     min-width: 450px;
@@ -164,23 +168,57 @@ const SubmitButton = styled.button`
     }
 `;
 
+const DeletedKeywordIcon = styled(FaPlus)`
+    position: absolute;
+    font-size: 20px;
+    color: #888;
+    top: ${({ top }) => top}%;
+    left: ${({ left }) => left}%;
+    transform: translate(-50%, -50%);
+`;
 
-const initialKeywords = [
-    { text: "미국", size: "24px", color: "#1D7F81", top: 30, left: 75 },
-    { text: "딥시크", size: "29px", color: "#2D5BE3", top: 50, left: 50 },
-    { text: "반도체", size: "18px", color: "#FF7F50", top: 20, left: 50 },
-    { text: "카카오", size: "26px", color: "#FFD700", top: 60, left: 85 },
-    { text: "GPT", size: "20px", color: "#8A2BE2", top: 10, left: 90 },
-    { text: "유튜브", size: "18px", color: "#FF4500", top: 65, left: 30 },
-    { text: "AI", size: "28px", color: "#4682B4", top: 7, left: 24 },
-    { text: "비트코인", size: "16px", color: "#2E8B57", top: 45, left: 14 }
+
+const Keywords = [
+    { id: 1, text: "", size: "24px", color: "#1D7F81", top: 30, left: 75 },
+    { id: 2, text: "", size: "29px", color: "#2D5BE3", top: 50, left: 50 },
+    { id: 3, text: "", size: "18px", color: "#FF7F50", top: 20, left: 50 },
+    { id: 4, text: "", size: "26px", color: "#FFD700", top: 60, left: 85 },
+    { id: 5, text: "", size: "20px", color: "#8A2BE2", top: 10, left: 90 },
+    { id: 6, text: "", size: "18px", color: "#FF4500", top: 65, left: 30 },
+    { id: 7, text: "", size: "28px", color: "#4682B4", top: 7, left: 24 },
+    { id: 8, text: "", size: "16px", color: "#2E8B57", top: 45, left: 14 }
 ];
 
+
 const NewsKeyword = () => {
-    const [keywords, setKeywords] = useState([...initialKeywords]);
+    const [keywords, setKeywords] = useState([]);
     const [popup, setPopup] = useState(null);
     const [modal, setModal] = useState(null);
     const [inputValue, setInputValue] = useState("");
+
+
+    useEffect(() => {
+        const loadKeywords = async () => {
+            try {
+                const apiData = await fetchKeywords(); // API에서 키워드 목록 가져오기
+
+                // API 데이터와 Keywords 배열을 병합하면서 인덱스 초과 방지 및 기본값 설정
+                const matchKeywords = Keywords.map((keyword) => {
+                    const matchedKeyword = apiData.find((item) => item.id === keyword.id);
+                    return matchedKeyword
+                        ? { ...keyword, text: matchedKeyword.name }
+                        : keyword; // 일치하는 id가 없으면 기존 데이터 유지
+                });
+    
+                setKeywords(matchKeywords);
+            } catch (error) {
+                console.error("키워드 조회 실패:", error);
+            }
+        };
+
+        loadKeywords();
+    }, []);
+
 
     // 우클릭 시 팝업 표시
     const handleRightClick = (event, keyword) => {
@@ -206,21 +244,59 @@ const NewsKeyword = () => {
         };
     }, [popup]);
 
-    // "수정" 클릭 시 모달 열기
+    // 키워드 생성
+    const handleCreate = (keyword) => {
+        setModal(keyword);
+        setInputValue(""); // 새로운 키워드는 빈칸
+    };
+
+    // 키워드 수정
     const handleEdit = () => {
         setInputValue(popup.keyword.text);
         setModal(popup.keyword);
         setPopup(null);
     };
 
+    // 삭제 (실제 삭제가 아니라 name을 ""로 변경)
+    const handleDelete = async (keyword) => {
+        try {
+            await updateKeyword(keyword.id, ""); // name을 빈 값으로 업데이트
+            setKeywords((prevKeywords) =>
+                prevKeywords.map((kw) =>
+                    kw.id === keyword.id ? { ...kw, text: "" } : kw
+                )
+            );
+        } catch (error) {
+            console.error("키워드 삭제 실패:", error);
+        }
+    };
+
     // 키워드 수정 완료
-    const handleSubmit = () => {
-        setKeywords(
-            keywords.map((kw) =>
-                kw.text === modal.text ? { ...kw, text: inputValue } : kw
-            )
-        );
-        setModal(null);
+    const handleSubmit = async () => {
+        if (!modal) return;
+
+        try {
+            if (modal.text === "") {
+                // 삭제된 키워드 다시 추가
+                const restoredKeyword = await addKeyword(modal.id, inputValue); // 기존 ID 유지
+                setKeywords((prev) =>
+                    prev.map((kw) =>
+                        kw.id === modal.id ? { ...kw, text: restoredKeyword.name } : kw
+                    )
+                );
+            } else {
+                // 기존 키워드 수정
+                const updatedKeyword = await updateKeyword(modal.id, inputValue);
+                setKeywords((prev) =>
+                    prev.map((kw) =>
+                        kw.id === updatedKeyword.id ? { ...kw, text: updatedKeyword.name } : kw
+                    )
+                );
+            }
+            setModal(null);
+        } catch (error) {
+            console.error("키워드 저장 실패:", error);
+        }
     };
 
 
@@ -229,8 +305,9 @@ const NewsKeyword = () => {
             <Title>오늘의 키워드</Title>
             <KeywordContainer>
                 {keywords.map((keyword, index) => (
+                    keyword.text ? (
                     <Keyword
-                        key={index}
+                        key={keyword.id || `keyword-${index}`}
                         to={`/news/${encodeURIComponent(keyword.text)}`}
                         size={keyword.size}
                         color={keyword.color}
@@ -240,6 +317,10 @@ const NewsKeyword = () => {
                     >
                         {keyword.text}
                     </Keyword>
+                    ) : (
+                        <DeletedKeywordIcon key={keyword.id} top={keyword.top} left={keyword.left}
+                            onClick={() => handleCreate(keyword)} />
+                    )
                 ))}
             </KeywordContainer>
 
@@ -247,7 +328,7 @@ const NewsKeyword = () => {
                 <ContextPopup>
                     <KeywordText>{popup.keyword.text}</KeywordText>
                     <ContextPopupItem onClick={handleEdit}>수정</ContextPopupItem>
-                    <ContextPopupItem onClick={() => setPopup(null)}>삭제</ContextPopupItem>
+                    <ContextPopupItem onClick={() => handleDelete(popup.keyword)}>삭제</ContextPopupItem>
                 </ContextPopup>
             )}
 
