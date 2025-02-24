@@ -5,7 +5,8 @@ import './App.css'
 import {
   BrowserRouter as Router,
   Routes,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom";
 
 //Pages
@@ -23,6 +24,7 @@ function App() {
       <AuthProvider> 
         <Router>
           <Routes>
+            <Route path="/" element={<Navigate to="/news/main" />} />  
             <Route path="/login" element={<Login />} />                       {/* 로그인 페이지 */}
             <Route path="/signup" element={<Signup />} />                     {/* 회원가입 페이지 */}
             <Route path="/news/main" element={<NewsMain />} />                {/* 뉴스 메인 페이지 */}
