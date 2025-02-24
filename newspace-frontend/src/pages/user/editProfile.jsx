@@ -3,18 +3,18 @@ import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
 
-// const Overlay = styled.div`
-//     position: fixed;
-//     top: 0;
-//     left: 0;
-//     width: 100%;
-//     height: 100%;
-//     background: rgba(0, 0, 0, 0.5); 
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     z-index: 3000;
-// `;
+const Overlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+`;
 
 const ModalContainer = styled.div`
     background: white;
@@ -205,6 +205,7 @@ const EditProfileModal = ({ user, onClose }) => {
     };
 
     return (
+        <Overlay onClick={onClose}>
             <ModalContainer onClick={(e) => e.stopPropagation()}>
                 <CloseButton onClick={onClose}><FiX /></CloseButton>
                 <h3>개인정보 수정</h3>
@@ -246,6 +247,7 @@ const EditProfileModal = ({ user, onClose }) => {
 
                 <SaveButton onClick={handleSave} disabled={isSaveDisabled}>수정 완료</SaveButton>
             </ModalContainer>
+        </Overlay>
     );
 };
 

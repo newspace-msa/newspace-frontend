@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../../context/AuthContext";
 import defaultProfile from "../../assets/profile.png";
+import userImg from "../../assets/user_image.png";
 import Sidebar from "./sidebar";
 import Notice from "./notice";
 import NewsKeyword from "./keywords";
 import NewsArticle from "./article";
 import UserToggle from "../user/userToggle";
-import EditProfileModal from "../user/editProfile"; 
 import { useNavigate } from 'react-router-dom';
 
 
@@ -24,20 +24,6 @@ import {
 
 
 const SidebarWidth = "130px";
-
-
-const Overlay = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3000;
-`;
 
 const PageContainer = styled.div`
     display: flex;
@@ -124,7 +110,7 @@ const NewsContainer = styled.div`
     justify-content: flex-start; 
     align-items: flex-start; 
     gap: 30px; 
-    z-index: 500;
+    z-index: 800;
 `;
 
 const Divider = styled.div`
@@ -142,11 +128,19 @@ const NewsMain = () => {
     // 로그인 상태
     const { isAuthorized, user, logout } = useAuth(); 
     const navigate = useNavigate();
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
     
     const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
+
+    // //임시 사용자 데이터
+    // const [user, setUser] = useState({
+    //     name: "김철수",
+    //     userid: "sssjj",
+    //     birth: "99-01-01",
+    //     nickname: "어피치",
+    //     image: userImg
+    // });
+
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     const toggleDropdown = () => {
         setDropdownOpen(!isDropdownOpen);
@@ -214,14 +208,6 @@ const NewsMain = () => {
     }, []);
     return (
         <PageContainer>
-            {isModalOpen && (
-                <Overlay onClick={() => setIsModalOpen(false)}>
-                    <EditProfileModal 
-                        user={user} 
-                        onClose={() => setIsModalOpen(false)} 
-                    />
-                </Overlay>
-            )}
             <Sidebar />
             <ContentContainer>
                 <NoticeContainer>
