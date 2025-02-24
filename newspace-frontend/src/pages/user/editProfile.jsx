@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
-
+import { updateUserInfo } from "../../api/userinfoApi";
 
 const Overlay = styled.div`
     position: fixed;
@@ -141,11 +141,16 @@ const SaveButton = styled.button`
     }
 `;
 
+
+
+
+
 const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
+    const [errorMessage, setErrorMessage] = useState(""); // 영서 
     const fileInputRef = useRef(null);
 
     // 프로필 업로드 핸들러
