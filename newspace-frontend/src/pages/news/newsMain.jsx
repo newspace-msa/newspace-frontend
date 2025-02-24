@@ -43,6 +43,7 @@ const NoticeContainer = styled.div`
     align-items: center;
     gap: 10px;
     padding: 10px 25px;
+    z-index: 300;
 `;
 
 const UserInfoContainer = styled.div`
@@ -111,7 +112,7 @@ const NewsContainer = styled.div`
     justify-content: flex-start; 
     align-items: flex-start; 
     gap: 30px; 
-    z-index: 800;
+    z-index: 100;
 `;
 
 const Divider = styled.div`

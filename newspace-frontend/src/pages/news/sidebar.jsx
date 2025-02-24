@@ -8,6 +8,8 @@ import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Brie
         Home, Settings, Calendar, Star, Bell, BarChart, Shield, Heart, X 
 } from "lucide-react";
 
+import { getUserInfo } from "../../api/userinfoApi";
+
 const SidebarContainer = styled.div`
     position: fixed;
     left: 0;
@@ -212,6 +214,7 @@ const Sidebar = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [popup, setPopup] = useState(null);
     const categoryRefs = useRef({}); 
+    const [userRole, setUserRole] = useState(null);
 
     //카테고리 조회
     useEffect(() => {
@@ -315,6 +318,17 @@ const Sidebar = () => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [popup]);
+
+    // 회원정보 조회 (user role 확인)
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            const userInfo = await getUserInfo();
+            if (userInfo) {
+                setUserRole(userInfo.role);
+            }
+        };
+        fetchUserRole();
+    }, []);
     
 
 
@@ -358,12 +372,14 @@ const Sidebar = () => {
                 </div>
 
             {/* 추가 버튼(카테고리 최대 8개 제한) */}
-            <AddCategoryButton 
-                onClick={() => setShowModal(true)} 
-                disabled={categories.length >= 8}
-            >
-                <Plus size={40} />
-            </AddCategoryButton>
+            {userRole === "ADMIN" && (
+                <AddCategoryButton 
+                    onClick={() => setShowModal(true)} 
+                    disabled={categories.length >= 8}
+                >
+                    <Plus size={40} />
+                </AddCategoryButton>
+            )}
 
             {/* 모달 */}
             {showModal && (
