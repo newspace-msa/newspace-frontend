@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 const profileUrl = `${BASE_URL}/api/user/profile`;
+const imageUrl = `${BASE_URL}/api/user/image`;
 
 // 📌 프로필 사진 등록 (POST)
 export const createProfileImage = async (file) => {
@@ -58,17 +59,10 @@ export const deleteProfileImage = async () => {
     }
 };
 
-// 📌 프로필 사진 다운로드 (GET)
-export const downloadProfileImage = async () => {
-    try {
-        const response = await axios.get(profileUrl, {
-            responseType: 'blob',
-            withCredentials: true
-        });
-        console.log('✅ [프로필 사진 다운로드 성공]', response);
-        return URL.createObjectURL(response.data);
-    } catch (error) {
-        console.error('❌ [프로필 사진 다운로드 실패]', error);
-        throw error;
+// 📌 프로필 사진 URL 생성 (GET)
+export const getProfileImageUrl = (filePath) => {
+    if (filePath && filePath.trim() !== "") {
+        return `${imageUrl}${filePath}`;
     }
+    return `${imageUrl}/20250224/355846841290080.png`;
 };
