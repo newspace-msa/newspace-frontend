@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiUserX } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 
 import EditProfileModal from "./editProfile";
@@ -13,9 +13,9 @@ const DropdownMenu = styled.div`
     border: 2px solid #337477; 
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 220px;
+    width: 250px;
     display: ${(props) => (props.open ? "block" : "none")};
-    padding: 20px;
+    padding: 25px;
     text-align: center;
     z-index: 1002;
     pointer-events: auto;
@@ -78,6 +78,32 @@ const LogoutIcon = styled(FiLogOut)`
     margin-bottom: 5px;
 `;
 
+const DeleteAccountButton = styled.button `
+    width: 100%;
+    padding: 10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+        background: #cc0000;
+    }
+`;
+
+
+const DeleteIcon = styled(FiUserX)`
+    font-size: 22px;
+`;
+
+
 const UserToggle = ({ isDropdownOpen, profile, user, logout }) => {
     const [isModalOpen, setModalOpen] = useState(false); // 개인정보수정 modal
 
@@ -98,6 +124,11 @@ const UserToggle = ({ isDropdownOpen, profile, user, logout }) => {
                     <LogoutIcon />
                     logout
                 </LogoutContainer>
+
+                <DeleteAccountButton>
+                    <DeleteIcon />
+                    회원 탈퇴
+                </DeleteAccountButton>
             </DropdownMenu>
 
             {isModalOpen && (
