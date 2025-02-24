@@ -1,4 +1,4 @@
-// src/api/userinfoApi.jsx
+// src/api/userinfoApi.jsx - 사용자 정보 변경 닉네임, 비밀번호 
 import axios from "axios";
 
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');

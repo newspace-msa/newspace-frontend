@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
-import { updateUserInfo } from "../../api/userinfoApi";
+import { updateUserInfo } from "../../api/userinfoApi"; // API 호출 함수 임포트 - 영서 개인정보수정 api
 
 const Overlay = styled.div`
     position: fixed;
@@ -183,60 +183,50 @@ const EditProfileModal = ({ user, onClose }) => {
     // 수정 완료 버튼 활성화 조건
     const isSaveDisabled = !nickname || (!!password && !confirmPassword) 
 
-    // 저장 핸들러
+    // 저장 핸들러 - API 명세에 맞게 수정
     const handleSave = async () => {
-        setErrorMessage("");
+        setErrorMessage(""); // 에러 초기화
 
-        // 비밀번호 변경 시 조건 확인
-        if (password && password !== confirmPassword) {
-            setErrorMessage("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        // 닉네임 유효성 검사
+        if (!nickname.trim()) {
+            setErrorMessage("닉네임을 입력해주세요.");
             return;
         }
 
-        const data = {
-            nickname,
-            newPassword: password,
-            newPasswordConfirm: confirmPassword
+        // 비밀번호 유효성 검사
+        if (password || confirmPassword) {
+            if (password !== confirmPassword) {
+                setErrorMessage("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            if (password.length < 4) {
+                setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
+                return;
+            }
+        }
+
+        // 수정할 데이터 구성
+        const updateData = {
+            nickname: nickname || null,
+            newPassword: password || null,
+            newPasswordConfirm: confirmPassword || null
         };
 
         try {
-            // 1. 닉네임만 수정
-            if (nickname !== user.nickname && !password && profileImage === user.image) {
-                await updateUserInfo({ nickname });
-            }
-            // 2. 비밀번호만 수정
-            else if (password && confirmPassword && nickname === user.nickname && profileImage === user.image) {
-                await updateUserInfo({ newPassword: password, newPasswordConfirm: confirmPassword });
-            }
-            // 3. 프로필 사진만 수정
-            else if (profileImage !== user.image && nickname === user.nickname && !password) {
-                // TODO: 프로필 사진만 수정 API 연동
-                console.log("프로필 사진만 수정");
-            }
-            // 4. 닉네임 & 비밀번호 수정
-            else if (nickname !== user.nickname && password && confirmPassword && profileImage === user.image) {
-                await updateUserInfo({ nickname, newPassword: password, newPasswordConfirm: confirmPassword });
-            }
-            // 5. 닉네임 & 프로필 사진 수정
-            else if (nickname !== user.nickname && profileImage !== user.image && !password) {
-                // TODO: 닉네임 & 프로필 사진 수정 API 연동
-                console.log("닉네임 & 프로필 사진 수정");
-            }
-            // 6. 프로필 사진 & 비밀번호 수정
-            else if (profileImage !== user.image && password && confirmPassword && nickname === user.nickname) {
-                // TODO: 프로필 사진 & 비밀번호 수정 API 연동
-                console.log("프로필 사진 & 비밀번호 수정");
-            }
-            // 7. 닉네임, 비밀번호, 프로필 사진 모두 수정
-            else if (nickname !== user.nickname && profileImage !== user.image && password && confirmPassword) {
-                // TODO: 모든 정보 수정 API 연동
-                console.log("닉네임, 비밀번호, 프로필 사진 모두 수정");
-            }
+            // API 호출
+            const updatedUserInfo = await updateUserInfo(updateData); 
 
-            // 성공적으로 수정된 경우 모달 닫기
+            // 🎯 응답(Response) 형식에 맞게 상태 업데이트
+            setNickname(updatedUserInfo.nickname);
+            setProfileImage(updatedUserInfo.profileImage?.trim() ? updatedUserInfo.profileImage : defaultProfile);
+
+            alert("개인정보가 수정되었습니다.");
+
+            // 모달 닫기
             onClose();
         } catch (error) {
-            setErrorMessage("정보 수정에 실패했습니다. 다시 시도해주세요.");
+            console.error("❌ [개인정보 수정 실패]", error);
+            setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
