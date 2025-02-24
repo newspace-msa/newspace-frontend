@@ -77,7 +77,7 @@ const LogoutIcon = styled(FiLogOut)`
     margin-bottom: 5px;
 `;
 
-const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
+const UserToggle = ({ isDropdownOpen, user, profile, logout, onEditProfileClick  }) => {
     const [isModalOpen, setModalOpen] = useState(false); // 개인정보수정 modal
 
     return (
@@ -85,7 +85,7 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
             <DropdownMenu className="user-dropdown" open={isDropdownOpen}>
                 <ProfileImage src={user?.image || profile} alt="프로필" />
                 <UserName>{user?.name}</UserName>
-                <EditProfileButton onClick={() => setModalOpen(true)}>
+                <EditProfileButton onClick={onEditProfileClick }>
                     개인정보 수정
                 </EditProfileButton>
                 <LogoutContainer onClick={logout}>
@@ -93,14 +93,6 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
                     logout
                 </LogoutContainer>
             </DropdownMenu>
-
-            {isModalOpen && (
-                <EditProfileModal
-                    user={user}
-                    profile={profile}
-                    onClose={() => setModalOpen(false)}
-                />
-            )}
         </>
     );
 
