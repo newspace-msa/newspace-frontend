@@ -156,94 +156,60 @@ const EditProfileModal = ({ user, onClose }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
-    const [errorMessage, setErrorMessage] = useState(""); // 영서 
+    const [errorMessage, setErrorMessage] = useState("");
+    const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    // 프로필 업로드 핸들러 수정
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileImage(reader.result);
-                setIsImageChanged(true);  // 이미지 변경 상태를 true로
             };
             reader.readAsDataURL(file);
+            setUploadedFile(file);  // 파일 자체를 상태로 저장
         }
     };
 
-    // 프로필 삭제 핸들러
-    const handleProfileDelete = () => {
-        setProfileImage(defaultProfile);
-    };
-
-    // 프로필 다운로드 핸들러
-    const handleProfileDownload = () => {
-        const link = document.createElement("a");
-        link.href = profileImage;
-        link.download = "profile_image.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    // 수정 완료 버튼 활성화 조건
-    const isSaveDisabled = !nickname || (!!password && !confirmPassword) 
-
-
-
-    // 저장 핸들러 수정
     const handleSave = async () => {
-        setErrorMessage(""); // 에러 초기화
+        setErrorMessage("");
 
-        // 닉네임 유효성 검사
         if (!nickname.trim()) {
             setErrorMessage("닉네임을 입력해주세요.");
             return;
         }
 
-        // 비밀번호 유효성 검사
-        if (password || confirmPassword) {
-            if (password !== confirmPassword) {
-                setErrorMessage("비밀번호가 일치하지 않습니다.");
-                return;
-            }
-            if (password.length < 4) {
-                setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
-                return;
-            }
+        if ((password || confirmPassword) && password !== confirmPassword) {
+            setErrorMessage("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        if (password && password.length < 4) {
+            setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
+            return;
         }
 
         try {
-            // **Step 1: 이미지 변경 확인 후 업데이트**
-            if (isImageChanged) {
-                const file = fileInputRef.current.files[0];
-                await updateProfileImage(file);  // 이미지 변경 API 호출
-                setIsImageChanged(false);  // 이미지 변경 상태 초기화
+            if (uploadedFile) {
+                await updateProfileImage(uploadedFile);  // 이미지 업데이트 API 호출
             }
 
-            // **Step 2: 개인정보 수정**
             const updateData = {
-                nickname: nickname || null,
-                newPassword: password || null,
-                newPasswordConfirm: confirmPassword || null
+                nickname,
+                newPassword: password,
+                newPasswordConfirm: confirmPassword
             };
+            const updatedUserInfo = await updateUserInfo(updateData);  // 사용자 정보 업데이트 API 호출
 
-            const updatedUserInfo = await updateUserInfo(updateData);
-
-            // 🎯 응답(Response) 형식에 맞게 상태 업데이트
             setNickname(updatedUserInfo.nickname);
-            setProfileImage(updatedUserInfo.profileImage?.trim() ? updatedUserInfo.profileImage : defaultProfile);
-
-            alert("개인정보가 수정되었습니다.");
-
-            // 모달 닫기
-            onClose();
+            onClose();  // 모달 닫기
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
             setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
+
 
     return (
         <Overlay onClick={onClose}>
