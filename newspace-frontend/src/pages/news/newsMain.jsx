@@ -137,6 +137,23 @@ const NewsMain = () => {
 
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
+    const toggleDropdown = () => {
+        setDropdownOpen(!isDropdownOpen);
+    };    
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest(".user-dropdown") && !event.target.closest(".user-icon")) { 
+                setDropdownOpen(false);
+            }
+        };
+    
+        document.addEventListener("click", handleClickOutside);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
+
     const handleLogin = () => {
         navigate('/login');
     };
@@ -184,10 +201,11 @@ const NewsMain = () => {
                             <UserGreeting>
                                 안녕하세요, <strong>{user.nickname}</strong>님!
                             </UserGreeting>
-                            <UserIconContainer 
+                            <UserIconContainer
+                                className="user-icon" 
                                 src={user.profileImage ? `${BASE_URL}/api/user/profile/${user.profileImage}` : defaultProfile} 
                                 alt="user" 
-                                onClick={() => setDropdownOpen(!isDropdownOpen)} 
+                                onClick={toggleDropdown}
                             />
                             <UserToggle 
                                 isDropdownOpen={isDropdownOpen} 
