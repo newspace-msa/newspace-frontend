@@ -190,6 +190,17 @@ const NewsMain = () => {
     console.log("🟢 현재 로그인 상태:", isAuthorized);
     console.log("🟢 현재 사용자 정보:", user ? user : "사용자 정보 없음");
 
+    useEffect(() => {
+        const handleClick = (event) => {
+            console.log("클릭한 요소:", event.target);
+        };
+    
+        document.addEventListener("click", handleClick);
+    
+        return () => {
+            document.removeEventListener("click", handleClick);
+        };
+    }, []);
     return (
         <PageContainer>
             <Sidebar />
