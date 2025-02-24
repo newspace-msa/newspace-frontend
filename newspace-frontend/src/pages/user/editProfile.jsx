@@ -206,6 +206,15 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
+
+
+
+    // 수정 완료 버튼 활성화 조건
+    const isSaveDisabled = !nickname.trim() || 
+                           (password && !confirmPassword) || 
+                           (password !== confirmPassword) || 
+                           (password && password.length < 4);
+                           
     return (
         <Overlay onClick={onClose}>
             <ModalContainer onClick={(e) => e.stopPropagation()}>
