@@ -72,40 +72,28 @@ const NewsLink = styled.a`
 const NewsDetailPage = () => {
     const { category, id } = useParams(); // URL에서 category, id 값 가져오기
     const [newsData, setNewsData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchNewsDetail = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                console.log("현재 카테고리:", category, "요청한 뉴스 ID:", id);
-                const data = await fetchNewsByCategory(category); // 전체 카테고리 뉴스 목록 가져오기
-                const selectedNews = data.find(news => String(news.id) === id); // 클릭한 뉴스 ID에 해당하는 데이터 찾기
-                
-                if (!selectedNews) {
-                    setError("해당 뉴스를 찾을 수 없습니다.");
-                } else {
-                    setNewsData(selectedNews);
-                }
-            } catch (error) {
-                setError("뉴스 데이터를 불러오는 중 오류가 발생했습니다.");
-            } finally {
-                setLoading(false);
-            }
-        };
+        const storedNews = localStorage.getItem(`news_${category}`);
+        console.log("LocalStorage 저장된 데이터:", storedNews); 
 
-        fetchNewsDetail();
+        if (storedNews) {
+            const newsList = JSON.parse(storedNews);
+            const selectedNews = newsList.find((news) => String(news.id) === id);
+
+            if (selectedNews) {
+                setNewsData(selectedNews);
+            } else {
+                setNewsData(null);
+            }
+        }
     }, [category, id]);
+
 
     return (
         <>
             <Sidebar />
             <Container>
-                {loading && <p>로딩 중...</p>}
-                {error && <p style={{ color: "red" }}>{error}</p>}
-
                 {newsData && (
                     <>
                         <Title>{newsData.title}</Title>
