@@ -8,6 +8,19 @@ export const AuthProvider = ({ children }) => {
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [user, setUser] = useState(null);
 
+    // 사용자 정보 불러오기 함수
+    const fetchUserInfo = async () => {
+        try {
+            const userInfo = await getUserInfo();
+            if (userInfo) {
+                setUser(userInfo);
+                localStorage.setItem("user", JSON.stringify(userInfo)); // 사용자 정보 저장
+            }
+        } catch (error) {
+            console.error("사용자 정보 조회 실패:", error);
+        }
+    };
+
     useEffect(() => {
         const storedAuth = localStorage.getItem("isAuthorized") === "true";
 
@@ -17,13 +30,6 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const fetchUserInfo = async () => {
-        const userInfo = await getUserInfo();
-        if (userInfo) {
-            setUser(userInfo);
-            localStorage.setItem("user", JSON.stringify(userInfo)); // 사용자 정보 저장
-        }
-    };
 
     const login = async() => {
         setIsAuthorized(true);
@@ -39,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthorized, login, logout }}>
+        <AuthContext.Provider value={{ isAuthorized, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
