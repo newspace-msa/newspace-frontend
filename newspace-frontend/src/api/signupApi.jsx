@@ -5,6 +5,7 @@ import axios from 'axios';
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 const signupUrl = `${BASE_URL}/api/user/signup`;
 const checkIdUrl = `${BASE_URL}/api/user/check-id`;
+const signoutUrl = `${BASE_URL}/api/user/signout`; 
 
 // 회원가입 API 호출
 export const signupApi = async (userData) => {
@@ -55,3 +56,22 @@ export const checkIdApi = async (username) => {
         return false;
     }
 };
+
+// 회원 탈퇴
+export const signoutApi = async() => {
+    console.log("회원 탈퇴 요청 DELETE URL:", signoutUrl);
+
+    try {
+        const response = await axios.delete(signoutUrl,  {
+            withCredentials: true //쿠키 인증
+        });
+        return response.data;
+    } catch (error) {
+        console.error('[회원탈퇴 실패]', error);
+        if (error.response) {
+            console.error("실패 응답 데이터:", error.response.data);
+        }
+        throw error;
+    }
+
+}
