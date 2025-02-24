@@ -105,6 +105,7 @@ const NewsContainer = styled.div`
     justify-content: flex-start; 
     align-items: flex-start; 
     gap: 30px; 
+    z-index: 800;
 `;
 
 const Divider = styled.div`
