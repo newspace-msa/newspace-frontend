@@ -4,6 +4,8 @@ import { Megaphone, Pencil, Check, Plus } from "lucide-react";
 
 import { fetchNotice, saveNotice } from "../../api/managerApi"; 
 
+import { getUserInfo } from "../../api/userinfoApi";
+
 const NoticeWrapper = styled.div`
     display: flex;
     align-items: center;
@@ -80,6 +82,7 @@ const Notice = () => {
     const [hasNotice, setHasNotice] = useState(() => {
         return localStorage.getItem("hasNotice") === "true"; //  로컬 스토리지에서 공지 존재 여부 가져오기
     });
+    const [userRole, setUserRole] = useState(null);
 
     // 공지 조회 (최초 로딩 시 실행)
     useEffect(() => {
@@ -134,6 +137,17 @@ const Notice = () => {
     };
     const getButtonIcon = () => (isEditing ? <Check size={16} /> : hasNotice ? <Pencil size={16} /> : <Plus size={16} />);
 
+    // 회원정보 조회 (user role 확인)
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            const userInfo = await getUserInfo();
+            if (userInfo) {
+                setUserRole(userInfo.role);
+            }
+        };
+        fetchUserRole();
+    }, []);
+
     return (
         <NoticeWrapper>
             <NoticeContainer>
@@ -157,9 +171,11 @@ const Notice = () => {
                     )}
                 </NoticeContent>
             </NoticeContainer>
+            {userRole === "ADMIN" && (
             <EditButton onClick={isEditing ? handleSave : () => setIsEditing(true)} disabled={isLoading}>
                 {getButtonIcon()} {getButtonLabel()}
             </EditButton>
+            )}
         </NoticeWrapper>
     );
 };
