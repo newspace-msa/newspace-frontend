@@ -1,10 +1,21 @@
 // src/api/profileApi.jsx
 import axios from 'axios';
 
-// 이게 틀렸나¿ㅜ。ㅜㅠㅠㅠㅠ
+// BASE_URL을 이 파일 내에서만 사용
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
 const profileUrl = `${BASE_URL}/api/user/profile`;
 const imageUrl = `${BASE_URL}/api/user/image`;
+const DEFAULT_PROFILE_IMAGE = `${imageUrl}/default.png`;
+
+// 📌 프로필 이미지 URL 생성
+export const getProfileImageUrl = (filePath) => {
+    // profileImage가 없거나 공백일 경우 기본 이미지 사용
+    if (!filePath || filePath.trim() === "") {
+        return DEFAULT_PROFILE_IMAGE;
+    }
+    // 슬래시 중복 방지
+    return `${imageUrl}${filePath}`.replace(/\/+/g, '/');
+};
 
 // 📌 프로필 사진 등록 (POST)
 export const createProfileImage = async (file) => {
@@ -59,12 +70,3 @@ export const deleteProfileImage = async () => {
         throw error;
     }
 };
-
-// 📌 프로필 사진 URL 생성 (GET)
-export const getProfileImageUrl = (filePath) => {
-    if (filePath && filePath.trim() !== "") {
-        return `${imageUrl}${filePath}`;
-    }
-    return `${imageUrl}/20250224/355846841290080.png`;
-};
-    

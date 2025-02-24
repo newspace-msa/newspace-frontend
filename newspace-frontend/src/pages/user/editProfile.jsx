@@ -168,7 +168,18 @@ const EditProfileModal = ({ user, onClose }) => {
                 setProfileImage(reader.result);
             };
             reader.readAsDataURL(file);
-            setUploadedFile(file);  // 파일 자체를 상태로 저장
+            setUploadedFile(file);
+        }
+    };
+
+    const handleProfileDelete = async () => {
+        try {
+            await deleteProfileImage();
+            setProfileImage(defaultProfile);
+            setUploadedFile(null);
+        } catch (error) {
+            console.error("❌ [프로필 삭제 실패]", error);
+            setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -180,36 +191,38 @@ const EditProfileModal = ({ user, onClose }) => {
             return;
         }
 
-        if ((password || confirmPassword) && password !== confirmPassword) {
-            setErrorMessage("비밀번호가 일치하지 않습니다.");
-            return;
+        if (password || confirmPassword) {
+            if (password !== confirmPassword) {
+                setErrorMessage("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            if (password.length < 4) {
+                setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
+                return;
+            }
         }
 
-        if (password && password.length < 4) {
-            setErrorMessage("비밀번호는 4자리 이상이어야 합니다.");
-            return;
-        }
+        const updateData = {
+            ...(nickname && { nickname }),
+            ...(password && { newPassword: password }),
+            ...(confirmPassword && { newPasswordConfirm: confirmPassword })
+        };
 
         try {
             if (uploadedFile) {
-                await updateProfileImage(uploadedFile);  // 이미지 업데이트 API 호출
+                await updateProfileImage(uploadedFile);
             }
-
-            const updateData = {
-                nickname,
-                newPassword: password,
-                newPasswordConfirm: confirmPassword
-            };
-            const updatedUserInfo = await updateUserInfo(updateData);  // 사용자 정보 업데이트 API 호출
+            const updatedUserInfo = await updateUserInfo(updateData);
 
             setNickname(updatedUserInfo.nickname);
-            onClose();  // 모달 닫기
+            setProfileImage(getProfileImageUrl(updatedUserInfo.profileImage));
+            alert("개인정보가 수정되었습니다.");
+            onClose();
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
             setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
-
 
     return (
         <Overlay onClick={onClose}>
