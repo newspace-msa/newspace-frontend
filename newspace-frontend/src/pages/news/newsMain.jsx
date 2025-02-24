@@ -180,7 +180,7 @@ const NewsMain = () => {
                                 안녕하세요, <strong>{user.nickname}</strong>님!
                             </UserGreeting>
                             <UserIconContainer 
-                                src={user.image || defaultProfile} 
+                                src={user.profileImage || defaultProfile} 
                                 alt="user" 
                                 onClick={() => setDropdownOpen(!isDropdownOpen)} 
                             />
