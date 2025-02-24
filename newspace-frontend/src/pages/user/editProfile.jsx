@@ -7,6 +7,10 @@ import { updateUserInfo } from "../../api/userinfoApi"; // API 호출 함수 임
 //프로필 이미지지 API
 import { createProfileImage, updateProfileImage, deleteProfileImage, downloadProfileImage } from "../../api/profileApi";
 
+// editProfile.jsx 상단에 BASE_URL 추가
+const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
+
+
 const Overlay = styled.div`
     position: fixed;
     top: 0;
