@@ -1,3 +1,4 @@
+//newsMain.jsx
 import { useEffect, useRef, useState } from "react";
 
 import styled from "styled-components";
@@ -253,7 +254,7 @@ const NewsMain = () => {
                                 rel="noopener noreferrer"
                                 style={{ textDecoration: "none", color: "inherit" }} 
                             >
-                                <NewsCard key={index}>
+                                <NewsCard key={index}>  
                                     <NewsTitle>{news.title}</NewsTitle>
                                     <NewsImage src={news.image} alt="뉴스 이미지" />
                                     <NewsContent>{news.content}</NewsContent>

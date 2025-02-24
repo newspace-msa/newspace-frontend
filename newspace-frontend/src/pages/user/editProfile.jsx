@@ -1,8 +1,9 @@
+//editProfile.jsx
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
-//import { updateUserInfoApi, deleteProfileImage } from "../api/userinfoApi.jsx";
+
 
 const Overlay = styled.div`
     position: fixed;
@@ -179,30 +180,59 @@ const EditProfileModal = ({ user, onClose }) => {
 
     // 저장 핸들러
     const handleSave = async () => {
-        // 아무것도 변경되지 않은 경우 모달 닫기
-        if (
-            nickname === user.nickname &&
-            profileImage === user.image &&
-            !password &&
-            !confirmPassword
-        ) {
-            onClose();
+        setErrorMessage("");
+
+        // 비밀번호 변경 시 조건 확인
+        if (password && password !== confirmPassword) {
+            setErrorMessage("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             return;
         }
 
-        // 닉네임만 수정 && 닉네임 공백 아닐시
-        // 프로필 사진만 수정(업로드, 삭제 시)
-        // 비밀번호만 수정
+        const data = {
+            nickname,
+            newPassword: password,
+            newPasswordConfirm: confirmPassword
+        };
 
-        // 닉네임 수정 && 프로필 사진 수정
-        // 닉네임 && 비밀번호 수정
-        // 프로필 사진 && 비밀번호 수정
+        try {
+            // 1. 닉네임만 수정
+            if (nickname !== user.nickname && !password && profileImage === user.image) {
+                await updateUserInfo({ nickname });
+            }
+            // 2. 비밀번호만 수정
+            else if (password && confirmPassword && nickname === user.nickname && profileImage === user.image) {
+                await updateUserInfo({ newPassword: password, newPasswordConfirm: confirmPassword });
+            }
+            // 3. 프로필 사진만 수정
+            else if (profileImage !== user.image && nickname === user.nickname && !password) {
+                // TODO: 프로필 사진만 수정 API 연동
+                console.log("프로필 사진만 수정");
+            }
+            // 4. 닉네임 & 비밀번호 수정
+            else if (nickname !== user.nickname && password && confirmPassword && profileImage === user.image) {
+                await updateUserInfo({ nickname, newPassword: password, newPasswordConfirm: confirmPassword });
+            }
+            // 5. 닉네임 & 프로필 사진 수정
+            else if (nickname !== user.nickname && profileImage !== user.image && !password) {
+                // TODO: 닉네임 & 프로필 사진 수정 API 연동
+                console.log("닉네임 & 프로필 사진 수정");
+            }
+            // 6. 프로필 사진 & 비밀번호 수정
+            else if (profileImage !== user.image && password && confirmPassword && nickname === user.nickname) {
+                // TODO: 프로필 사진 & 비밀번호 수정 API 연동
+                console.log("프로필 사진 & 비밀번호 수정");
+            }
+            // 7. 닉네임, 비밀번호, 프로필 사진 모두 수정
+            else if (nickname !== user.nickname && profileImage !== user.image && password && confirmPassword) {
+                // TODO: 모든 정보 수정 API 연동
+                console.log("닉네임, 비밀번호, 프로필 사진 모두 수정");
+            }
 
-        // 닉네임 수정 && 프로필 사진 수정 && 비밀번호 수정
-
-        // 비밀번호 수정할 때 조건 부합하지 않을 때 에러메세지 출력하도록!
-        // ex) 비밀번호 입력 안하고 비밀번호 확인만 입력하면 "비밀번호를 입력해주세요!" 이런식으로 아래에 빨간 에러메세지 뜨게~
-
+            // 성공적으로 수정된 경우 모달 닫기
+            onClose();
+        } catch (error) {
+            setErrorMessage("정보 수정에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
     return (
