@@ -190,16 +190,16 @@ const EditProfileModal = ({ onClose }) => {
                 console.log("📡 [프로필 이미지 업로드 요청] 파일:", file);
 
                 // 파일 객체를 직접 전달 (API 내부에서 FormData 생성)
-                const response = await createProfileImage(file);
+                const imageUrl = await createProfileImage(file);
                 console.log("✅ [프로필 이미지 업로드 성공] 응답:", response);
 
-                if (!response || !response.data) {
-                    console.error("❌ [응답 오류] 응답 구조:", response);
+                if (!imageUrl) {
+                    console.error("❌ [응답 오류] 이미지 URL이 없습니다.");
                     throw new Error("백엔드 응답이 올바르지 않습니다.");
-                }
+                } 
 
                 // 백엔드가 반환하는 새로운 프로필 이미지 경로를 받아와 적용
-                const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data}`;
+                const newProfileImageUrl = `${BASE_URL}/api/user/image${imageUrl}`;
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
                 setUser((prevUser) => ({ ...prevUser, profileImage: newProfileImageUrl }));
