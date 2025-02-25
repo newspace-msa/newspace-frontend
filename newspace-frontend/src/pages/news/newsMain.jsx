@@ -260,7 +260,7 @@ const NewsMain = () => {
                                 href={news.link} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                style={{ textDecoration: "none", color: "inherit" }} 
+                                style={{ textDecoration: "none", color: "#000" }}
                             >
                                 <NewsCard key={index}>  
                                     <NewsTitle>{news.title}</NewsTitle>
