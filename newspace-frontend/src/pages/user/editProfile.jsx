@@ -1,5 +1,5 @@
 //editProfile.jsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext"; 
@@ -165,7 +165,7 @@ const EditProfileModal = ({ onClose }) => {
             setUser(storedUser);
         }
     }, []);
-    
+
     const profileImage = user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile;
 
     // 프로필 이미지 다운로드 핸들러
