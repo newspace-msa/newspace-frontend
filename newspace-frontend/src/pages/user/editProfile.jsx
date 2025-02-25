@@ -153,12 +153,12 @@ const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(user?.image || defaultProfile);
+    const [profileImage, setProfileImage] = useState(user?.profileImage || defaultProfile);
     const [errorMessage, setErrorMessage] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    // handleProfileDownload 함수 추가
+    // 프로필 이미지 다운로드
     const handleProfileDownload = async () => {
         try {
             if (profileImage && profileImage !== defaultProfile) {
@@ -177,6 +177,7 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
+    // 프로필 이미지 업로드
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -189,6 +190,7 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
+    // 프로필 이미지 삭제
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
@@ -200,13 +202,9 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
+    // 수정 완료 (저장) 핸들러
     const handleSave = async () => {
         setErrorMessage("");
-
-        if (!nickname.trim()) {
-            setErrorMessage("닉네임을 입력해주세요.");
-            return;
-        }
 
         if (password || confirmPassword) {
             if (password !== confirmPassword) {
@@ -220,20 +218,30 @@ const EditProfileModal = ({ user, onClose }) => {
         }
 
         const updateData = {
-            ...(nickname && { nickname }),
-            ...(password && { newPassword: password }),
-            ...(confirmPassword && { newPasswordConfirm: confirmPassword })
+            nickname: nickname || null,
+            newPassword: password || null,
+            newPasswordConfirm: confirmPassword || null
         };
 
         try {
+            // 프로필 이미지가 변경된 경우에만 업데이트
             if (uploadedFile) {
                 await updateProfileImage(uploadedFile);
             }
+            // 닉네임, 비밀번호 업데이트
             const updatedUserInfo = await updateUserInfo(updateData);
 
             setNickname(updatedUserInfo.nickname);
-            setProfileImage(getProfileImageUrl(updatedUserInfo.profileImage));
+            setProfileImage(updatedUserInfo.profileImage);
             alert("개인정보가 수정되었습니다.");
+            
+            // 상태를 업데이트하여 실시간 반영
+            setUser((prevUser) => ({
+                ...prevUser,
+                nickname: updatedUserInfo.nickname,
+                profileImage: updatedUserInfo.profileImage
+            }));
+
             onClose();
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
@@ -241,12 +249,8 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
- // isSaveDisabled는 handleSave 함수 아래 또는 return 직전에 위치해야 함
-const isSaveDisabled = 
-    !nickname.trim() || 
-    (password && !confirmPassword) ||  
-    (password !== confirmPassword) ||  
-    (password && password.length < 4);   
+    // 수정 완료 버튼 활성화 조건
+    const isSaveDisabled = false;
 
 
     return (
