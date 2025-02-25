@@ -187,8 +187,17 @@ const EditProfileModal = ({ onClose }) => {
         const file = event.target.files[0];
         if (file) {
             try {
+                console.log("📡 [프로필 이미지 업로드 요청] 파일:", file);
+
                 // 파일 객체를 직접 전달 (API 내부에서 FormData 생성)
                 const response = await createProfileImage(file);
+                console.log("✅ [프로필 이미지 업로드 성공] 응답:", response);
+
+                if (!response || !response.data) {
+                    console.error("❌ [응답 오류] 응답 구조:", response);
+                    throw new Error("백엔드 응답이 올바르지 않습니다.");
+                }
+
                 // 백엔드가 반환하는 새로운 프로필 이미지 경로를 받아와 적용
                 const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data}`;
     
@@ -196,7 +205,13 @@ const EditProfileModal = ({ onClose }) => {
                 setUser((prevUser) => ({ ...prevUser, profileImage: newProfileImageUrl }));
     
             } catch (error) {
-                console.error("프로필 이미지 업로드 실패:", error);
+                console.error("❌ [프로필 이미지 업로드 실패]", error);
+
+                if (error.response) {
+                    console.error("❌ [응답 상태 코드]:", error.response.status);
+                    console.error("❌ [응답 데이터]:", error.response.data);
+                }
+
                 setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
             }
         }
