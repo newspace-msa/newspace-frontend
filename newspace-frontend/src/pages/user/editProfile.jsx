@@ -153,7 +153,7 @@ const EditProfileModal = ({ user, onClose }) => {
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(user?.profileImage || defaultProfile);
+    const [profileImage, setProfileImage] = useState(user ? user.profileImage : defaultProfile);
     const [errorMessage, setErrorMessage] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);

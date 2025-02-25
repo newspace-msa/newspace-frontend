@@ -1,8 +1,7 @@
+//userToggle.jsx
 import { useState } from "react";
 import styled from "styled-components";
-import { FiLogOut, FiUserX } from "react-icons/fi";
-import { useAuth } from "../../context/AuthContext";
-import { signoutApi } from "../../api/signupApi";
+import { FiLogOut } from "react-icons/fi";
 
 import EditProfileModal from "./editProfile";
 
@@ -14,9 +13,9 @@ const DropdownMenu = styled.div`
     border: 2px solid #337477; 
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 250px;
+    width: 220px;
     display: ${(props) => (props.open ? "block" : "none")};
-    padding: 25px;
+    padding: 20px;
     text-align: center;
     z-index: 1002;
     pointer-events: auto;
@@ -58,110 +57,50 @@ const EditProfileButton = styled.button`
     border-radius: 10px;
     font-size: 14px;
     cursor: pointer;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     
     &:hover {
         background: #285e5e;
     }
 `;
 
-const LogoutButton = styled.button`
-    width: 100%;
-    padding: 10px;
-    background: #3374ff;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
+const LogoutContainer = styled.div`
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 10px; 
-    
-    &:hover {
-        background: #285bcc;
-    }
+    cursor: pointer;
+    color: black;
 `;
 
 const LogoutIcon = styled(FiLogOut)`
-    font-size: 22px;
-`;
-const DeleteAccountButton = styled.button `
-    width: 100%;
-    padding: 10px;
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    &:hover {
-        background: #cc0000;
-    }
+    font-size: 24px;
+    color: #337477;
+    margin-bottom: 5px;
 `;
 
-
-const DeleteIcon = styled(FiUserX)`
-    font-size: 22px;
-`;
-
-
-const UserToggle = ({ isDropdownOpen, profile, user, logout }) => {
-    const [isModalOpen, setModalOpen] = useState(false); // 개인정보수정 modal
-
-    const handleLogout = () => {
-        logout();  // 로그아웃 함수 실행
-        //window.location.reload();  // 새로고침하여 상태 초기화
-    };
-
-    const handleSignOut = async () => {
-        const confirmDelete = window.confirm("정말로 회원 탈퇴를 진행하시겠습니까?");
-        if (!confirmDelete) return;
-
-        try {
-            await signoutApi(); // 회원 탈퇴 API 호출
-            alert("회원 탈퇴가 완료되었습니다.");
-
-            await handleLogout(); // 로그아웃 로직 실행 (상태 초기화 및 리디렉트)
-            window.location.reload();
-        } catch (error) {
-            alert("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");
-            console.error(" 회원 탈퇴 실패", error);
-        }
-    };
+const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
+    const [user, setUser] = useState(initialUser); 
+    const [isModalOpen, setModalOpen] = useState(false); 
 
     return (
         <>
             <DropdownMenu className="user-dropdown" open={isDropdownOpen}>
-                <ProfileImage src={user?.image || profile} alt="프로필" />
-                <UserName>{user?.name}</UserName>
+                {/* 🔥 수정된 프로필 이미지 반영 */}
+                <ProfileImage src={user.profileImage ? user.profileImage : profile} alt="프로필" />
+                <UserName>{user.name}</UserName>
                 <EditProfileButton onClick={() => setModalOpen(true)}>
                     개인정보 수정
                 </EditProfileButton>
-
-                <LogoutButton onClick={handleLogout}>
+                <LogoutContainer onClick={logout}>
                     <LogoutIcon />
-                    로그아웃
-                </LogoutButton>
-
-                <DeleteAccountButton onClick={handleSignOut}>
-                    <DeleteIcon />
-                    회원 탈퇴
-                </DeleteAccountButton>
+                    logout
+                </LogoutContainer>
             </DropdownMenu>
 
             {isModalOpen && (
                 <EditProfileModal
                     user={user}
+                    onUpdateUser={(updatedUser) => setUser(updatedUser)} // 🔥 수정된 상태 업데이트
                     profile={profile}
                     onClose={() => setModalOpen(false)}
                 />
