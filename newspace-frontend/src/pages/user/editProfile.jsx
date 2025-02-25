@@ -169,24 +169,53 @@ const EditProfileModal = ({ onClose }) => {
                 return;
             }
     
-            // 서버에서 실제 다운로드할 URL 가져오기
-            const fileUrl = await downloadProfileImage();
+            // 서버에서 이미지 Blob 데이터 가져오기
+            const blobData = await downloadProfileImage();
 
-            // <a> 태그를 활용한 즉시 다운로드
+            // 파일 확장자 유지
+            let fileExtension = user.profileImage.split(".").pop();
+            fileExtension = fileExtension.length <= 5 ? fileExtension : "png"; // 확장자 없으면 기본값 설정
+            const fileName = `profile_image.${fileExtension}`;
+
+            // Blob 데이터를 파일로 변환하여 다운로드
+            const blobUrl = URL.createObjectURL(blobData);
             const link = document.createElement("a");
-            link.href = fileUrl;
-            link.setAttribute("download", "profile_image.png"); // 파일명 설정
+            link.href = blobUrl;
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            console.log("✅ 프로필 이미지 다운로드 성공:", fileUrl);
+            console.log("✅ 프로필 이미지 다운로드 성공:", fileName);
+
+            // 메모리 누수 방지
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
         } catch (error) {
             console.error("❌ 프로필 이미지 다운로드 실패", error);
             alert("프로필 이미지 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
-};
+    };
 
+    const testDownload = async () => {
+        try {
+            const response = await downloadProfileImage();
+            console.log("📥 [서버 응답]:", response);
+    
+            if (response instanceof Blob) {
+                console.log("✅ 서버에서 Blob 데이터를 반환함!");
+            } else if (typeof response === "string") {
+                console.log("✅ 서버에서 파일 경로 (string)를 반환함!");
+            } else {
+                console.log("❌ 예상치 못한 응답 형식:", response);
+            }
+        } catch (error) {
+            console.error("❌ 테스트 중 오류 발생:", error);
+        }
+    };
+    
+    const handleTestDownload = () => {
+        testDownload();
+    };
 
 
     
@@ -304,6 +333,7 @@ const EditProfileModal = ({ onClose }) => {
                         <IconButton onClick={() => fileInputRef.current.click()}><FiUpload /></IconButton>
                         <IconButton onClick={handleProfileDownload}><FiDownload /></IconButton>
                         <IconButton onClick={handleProfileDelete}><FiTrash2 /></IconButton>
+                        <button onClick={handleTestDownload}>다운로드 테스트</button>
                     </ProfileActions>
                     <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleProfileUpload} />
                 </ProfileSection>

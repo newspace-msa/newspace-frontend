@@ -66,19 +66,20 @@ export const deleteProfileImage = async () => {
 
 export const downloadProfileImage = async () => {
     try {
-        const response = await axios.get(profileUrl, { withCredentials: true });
+        const response = await axios.get(profileUrl, {
+            responseType: "blob", // 🔹 Blob 형식으로 응답 받기
+            withCredentials: true,
+        });
 
-        if (!response.data || typeof response.data !== "string") {
-            throw new Error("서버에서 받은 파일 경로가 올바르지 않습니다.");
+        if (!response.data) {
+            throw new Error("서버에서 받은 이미지 데이터가 없습니다.");
         }
 
-        const filePath = response.data;
-        const fileUrl = `${imageUrl}${filePath}`; 
+        console.log("✅ [프로필 사진 다운로드 성공]");
 
-        console.log('[프로필 사진 다운로드 성공]');
-        return fileUrl;
+        return response.data; // 🔹 Blob 데이터 반환
     } catch (error) {
-        console.error('❌ [프로필 사진 다운로드 실패]', error);
+        console.error("❌ [프로필 사진 다운로드 실패]", error);
         throw error;
     }
 };
