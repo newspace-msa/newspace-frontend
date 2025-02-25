@@ -85,18 +85,20 @@ const Notice = () => {
     });
     const [userRole, setUserRole] = useState(null);
 
-    const MAX_NOTICE_LENGTH = 50; // 최대 글자 수 설정
+    const MAX_NOTICE_LENGTH = 30; // 최대 글자 수 설정
 
     const handleNoticeChange = (e) => {
         const inputText = e.target.value;
-        
+    
+        // 입력된 텍스트가 최대 글자 수를 초과할 경우 자동으로 잘라서 설정
         if (inputText.length > MAX_NOTICE_LENGTH) {
-            alert(`공지사항은 최대 ${MAX_NOTICE_LENGTH}자까지 입력할 수 있습니다.`);
+            setNoticeText(inputText.slice(0, MAX_NOTICE_LENGTH));
             return;
         }
-        
+    
         setNoticeText(inputText);
     };
+    
 
     // 공지 조회 (최초 로딩 시 실행)
     useEffect(() => {
@@ -177,9 +179,8 @@ const Notice = () => {
                         <NoticeInput 
                             type="text" 
                             value={noticeText} 
-                            onChange={(e) => setNoticeText(e.target.value)}
-                            placeholder="공지 내용을 입력하세요"
-                            maxLength={MAX_NOTICE_LENGTH} 
+                            onChange={handleNoticeChange}
+                            placeholder="공지 내용을 입력하세요" 
                         />
                     ) : (
                         <NoticeText>{noticeText || "등록된 공지가 없습니다."}</NoticeText>
