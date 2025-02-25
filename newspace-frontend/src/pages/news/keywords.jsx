@@ -253,6 +253,13 @@ const NewsKeyword = () => {
         };
     }, [popup]);
 
+
+    // 입력값을 문자열로 유지
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setInputValue(String(value));  
+    };
+
     // 키워드 생성
     const handleCreate = (keyword) => {
         setModal(keyword);
@@ -359,7 +366,7 @@ const NewsKeyword = () => {
                             <LabelContainer>키워드</LabelContainer>
                             <InputField 
                                 value={inputValue} 
-                                onChange={(e) => setInputValue(e.target.value)} 
+                                onChange={handleInputChange} 
                             />
                         </FlexBox>
                         <SubmitButton onClick={handleSubmit} disabled={!inputValue.trim()}>수정완료</SubmitButton>
