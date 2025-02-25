@@ -226,7 +226,7 @@ const NewsMain = () => {
                             </UserGreeting>
                             <UserIconContainer
                                 className="user-icon" 
-                                src={user.profileImage ? `${BASE_URL}/api/user/profile/${user.profileImage}` : defaultProfile} 
+                                src={user.profileImage ? `${BASE_URL}/api/user/image/${user.profileImage}?${Date.now()}` : defaultProfile} 
                                 alt="user" 
                                 onClick={toggleDropdown}
                             />
