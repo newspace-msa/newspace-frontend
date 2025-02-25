@@ -2,6 +2,8 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { FiLogOut } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
+import defaultProfile from "../../assets/profile.png";
 
 import EditProfileModal from "./editProfile";
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
@@ -80,24 +82,18 @@ const LogoutIcon = styled(FiLogOut)`
     margin-bottom: 5px;
 `;
 
-const UserToggle = ({ isDropdownOpen, user, logout }) => {
-    const [currentUser, setCurrentUser] = useState(user);
+const UserToggle = ({ isDropdownOpen, logout }) => {
     const [isModalOpen, setModalOpen] = useState(false);
-
-    const updateUser = (updatedUserInfo) => {
-        setCurrentUser({ ...currentUser, ...updatedUserInfo });
-    };
+    const { user, setUser } = useAuth();
 
     return (
         <>
             <DropdownMenu open={isDropdownOpen}>
                 <ProfileImage
-                    src={currentUser?.image
-                            ? `${BASE_URL}/api/user/image${currentUser.image}`
-                            : "defaultProfile.jpg"}
-                    alt="프로필"
+                    src={user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile}
+                    alt="user"
                 />
-                <UserName>{currentUser?.name}</UserName>
+                <UserName>{user?.name}</UserName>
                 <EditProfileButton onClick={() => setModalOpen(true)}>
                     개인정보 수정
                 </EditProfileButton>
@@ -109,8 +105,8 @@ const UserToggle = ({ isDropdownOpen, user, logout }) => {
 
             {isModalOpen && (
                 <EditProfileModal
-                    user={currentUser}
-                    onUpdateUser={updateUser}
+                    user={user}
+                    onUpdateUser={(updatedUserInfo) => setUser(updatedUserInfo)}
                     onClose={() => setModalOpen(false)}
                 />
             )}

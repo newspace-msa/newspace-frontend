@@ -53,13 +53,6 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("user");
             sessionStorage.clear();
 
-            // // 모든 쿠키 삭제
-            // document.cookie.split(";").forEach((cookie) => {
-            //     document.cookie = cookie
-            //         .replace(/^ +/, "")
-            //         .replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
-            // });
-
             // 페이지 새로고침 (로그인 상태 반영)
             window.location.reload();
         } catch (error) {
