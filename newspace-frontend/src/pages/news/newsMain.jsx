@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../../context/AuthContext";
 import defaultProfile from "../../assets/profile.png";
-import userImg from "../../assets/user_image.png";
 import Sidebar from "./sidebar";
 import Notice from "./notice";
 import NewsKeyword from "./keywords";

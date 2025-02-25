@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { FaPlus } from "react-icons/fa"; 
 
-import { fetchKeywords, addKeyword, updateKeyword } from "../../api/keywordApi";
+import { fetchKeywords, updateKeyword } from "../../api/keywordApi";
 
 import { useAuth } from "../../context/AuthContext";
 
