@@ -57,6 +57,18 @@
     overflow: hidden;
 }
 
+/* 회원가입 타이틀을 검은색으로 변경 */
+.signup-title {
+    color: black;  /* 검은색 적용 */
+    font-size: 24px; /* 필요 시 크기 조정 */
+    font-weight: bold;
+}
+
+.signup-input-group label {
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+}
 
 
 .signup-logo-image {
