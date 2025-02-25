@@ -158,6 +158,14 @@ const EditProfileModal = ({ onClose }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
+    // 🔄 localStorage에서 변경된 user를 즉시 가져오도록 함
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
+    
     const profileImage = user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile;
 
     // 프로필 이미지 다운로드 핸들러
