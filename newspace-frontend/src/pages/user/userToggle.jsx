@@ -135,8 +135,16 @@ const UserToggle = ({ isDropdownOpen, logout }) => {
             await signoutApi(); // 회원 탈퇴 API 호출
             alert("회원 탈퇴가 완료되었습니다.");
 
-            await handleLogout(); // 로그아웃 로직 실행 (상태 초기화 및 리디렉트)
-            window.location.reload();
+            await logout();
+            // localStorage 명시적으로 삭제 (혹시 남아있을 경우)
+            localStorage.removeItem("user");
+            localStorage.removeItem("isAuthorized");
+            sessionStorage.clear();
+
+            // 100ms 지연 후 새로고침 (상태 업데이트 반영 보장)
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
         } catch (error) {
             alert("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");
             console.error(" 회원 탈퇴 실패", error);
@@ -157,7 +165,7 @@ const UserToggle = ({ isDropdownOpen, logout }) => {
 
                 <LogoutButton onClick={handleLogout}>
                     <LogoutIcon />
-                    logout
+                    로그아웃
                 </LogoutButton>
 
                 <DeleteAccountButton onClick={handleSignOut}>
