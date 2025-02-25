@@ -85,7 +85,7 @@ const Notice = () => {
     });
     const [userRole, setUserRole] = useState(null);
 
-    const MAX_NOTICE_LENGTH = 25; // 최대 글자 수 설정
+    const MAX_NOTICE_LENGTH = 22; // 최대 글자 수 설정
 
     const handleNoticeChange = (e) => {
         const inputText = e.target.value;
