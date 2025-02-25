@@ -216,6 +216,7 @@ const Sidebar = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [popup, setPopup] = useState(null);
     const categoryRefs = useRef({}); 
+    const navigate = useNavigate();
 
     //카테고리 조회
     useEffect(() => {

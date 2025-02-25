@@ -141,6 +141,7 @@ const InputField = styled.input`
     font-size: 18px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    type: text; 
 `;
 
 
