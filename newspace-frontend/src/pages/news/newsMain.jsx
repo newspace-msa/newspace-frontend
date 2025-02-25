@@ -149,19 +149,17 @@ const NewsMain = () => {
         setDropdownOpen(!isDropdownOpen);
     };    
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest(".user-dropdown") && !event.target.closest(".user-icon")) { 
-                setDropdownOpen(false);
-            }
-        };
-    
-        document.addEventListener("click", handleClickOutside);
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, []);
+    // 프로필 이미지 상태 관리 - ys
+    const [profileImage, setProfileImage] = useState(defaultProfile);
 
+    // 프로필 이미지 상태 업데이트 - ys
+    useEffect(() => {
+        if (user?.profileImage) {
+            setProfileImage(`${BASE_URL}/api/user/profile/${user.profileImage}`);
+        } else {
+            setProfileImage(defaultProfile);
+        }
+    }, [user?.profileImage]);
     const handleLogin = () => {
         navigate('/login');
     };
@@ -226,7 +224,7 @@ const NewsMain = () => {
                             </UserGreeting>
                             <UserIconContainer
                                 className="user-icon" 
-                                src={user.profileImage ? `${BASE_URL}/api/user/profile/${user.profileImage}` : defaultProfile} 
+                                src={profileImage} 
                                 alt="user" 
                                 onClick={toggleDropdown}
                             />
