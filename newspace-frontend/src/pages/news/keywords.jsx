@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { FaPlus } from "react-icons/fa"; 
 
 import { fetchKeywords, addKeyword, updateKeyword } from "../../api/keywordApi";
+
+import { useAuth } from "../../context/AuthContext";
 
 const SectionContainer = styled.div`
     width: 450px;
@@ -192,6 +194,8 @@ const Keywords = [
 
 
 const NewsKeyword = () => {
+    const { user, isAuthorized } = useAuth(); // AuthContext에서 사용자 정보 가져오기
+    const navigate = useNavigate(); 
     const [keywords, setKeywords] = useState([]);
     const [popup, setPopup] = useState(null);
     const [modal, setModal] = useState(null);
@@ -224,7 +228,9 @@ const NewsKeyword = () => {
     // 우클릭 시 팝업 표시
     const handleRightClick = (event, keyword) => {
         event.preventDefault();
-        setPopup({ keyword });
+        if (user?.role === "ADMIN") {
+            setPopup({ keyword });
+        }
     };
 
     // 팝업 바깥 클릭 시 닫기
@@ -300,6 +306,15 @@ const NewsKeyword = () => {
         }
     };
 
+    // 키워드 클릭 시 로그인 상태 확인 후 이동
+    const handleKeywordClick = (keywordText) => {
+        if (!isAuthorized) {
+            navigate("/login"); // 로그인 안 한 경우 로그인 페이지로 이동
+        } else {
+            navigate(`/news/${encodeURIComponent(keywordText)}`); // 로그인 상태면 뉴스 페이지 이동
+        }
+    };
+
 
     return (
         <SectionContainer>
@@ -309,11 +324,11 @@ const NewsKeyword = () => {
                     keyword.text ? (
                     <Keyword
                         key={keyword.id || `keyword-${index}`}
-                        to={`/news/${encodeURIComponent(keyword.text)}`}
                         size={keyword.size}
                         color={keyword.color}
                         top={keyword.top}
                         left={keyword.left}
+                        onClick={() => handleKeywordClick(keyword.text)} // 클릭 이벤트 처리
                         onContextMenu={(e) => handleRightClick(e, keyword)}
                     >
                         {keyword.text}
