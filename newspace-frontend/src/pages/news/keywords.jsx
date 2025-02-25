@@ -25,6 +25,7 @@ const Title = styled.h2`
     margin-left: 15px;
     padding-bottom: 10px;
     text-align: left;
+    color: #000000;
 `;
 
 const KeywordContainer = styled.div`

@@ -29,6 +29,7 @@ const NewsTitle = styled.h3`
     font-weight: bold;
     margin-left: 5px;
     margin-bottom: 5px;
+    color: #535bf2;
 `;
 
 const NewsSummary = styled.p`
