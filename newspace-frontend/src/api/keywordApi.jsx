@@ -16,28 +16,23 @@ export const fetchKeywords = async () => {
 };
 
 
-// 키워드 추가 
-export const addKeyword = async (name) => {
-    console.log("키워드 추가 POST 요청:", { name });
-    try {
-        const response = await axios.post(`${BASE_URL}/api/news/keyword`, { name });
-        console.log("키워드 추가 성공:", response.data);
-        return response.data;
-    } catch (error) {
-        console.log("키워드 추가 실패:", error);
-        throw error;
-    }
-};
-
 // 키워드 수정 
-export const updateKeyword = async (keywordId, name) => {
-    console.log("키워드 수정 PUT 요청:", { keywordId, name});
+export const updateKeyword = async (id, name) => {
+    console.log("키워드 수정 PUT 요청:", { id, name });
+
+    // name이 없거나 빈 문자열이면 에러 방지
+    if (!name.trim()) {
+        console.error("오류: 유효하지 않은 name 값입니다.");
+        throw new Error("name 값이 비어 있습니다.");
+    }
+
     try {
-        const response = await axios.put(`${BASE_URL}/api/news/keyword/${keywordId}`, { name});
+        const response = await axios.put(`${BASE_URL}/api/news/keyword/${id}`, { name });
+
         console.log("키워드 수정 성공:", response.data);
         return response.data;
     } catch (error) {
-        console.log("키워드 수정 실패:", error);
+        console.error("키워드 수정 실패:", error);
         throw error;
     }
 };

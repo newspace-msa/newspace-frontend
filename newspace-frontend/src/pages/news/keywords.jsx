@@ -293,23 +293,21 @@ const NewsKeyword = () => {
         if (!modal) return;
 
         try {
-            if (modal.text === "") {
-                // 삭제된 키워드 다시 추가
-                const restoredKeyword = await addKeyword(modal.id, inputValue); // 기존 ID 유지
-                setKeywords((prev) =>
-                    prev.map((kw) =>
-                        kw.id === modal.id ? { ...kw, text: restoredKeyword.name } : kw
-                    )
-                );
-            } else {
-                // 기존 키워드 수정
-                const updatedKeyword = await updateKeyword(modal.id, inputValue);
-                setKeywords((prev) =>
-                    prev.map((kw) =>
-                        kw.id === updatedKeyword.id ? { ...kw, text: updatedKeyword.name } : kw
-                    )
-                );
-            }
+            const stringValue = String(inputValue); // 확실히 문자열로 변환
+            const keywordId = modal.id; 
+            console.log("API 요청 데이터:", { id: keywordId, name: stringValue }); // 디버깅
+
+            // 기존 키워드 수정 (삭제 또는 새로운 키워드로 변경)
+            const updatedKeyword = await updateKeyword(keywordId, stringValue);
+            console.log("수정된 키워드 응답:", updatedKeyword);
+
+            // UI 업데이트
+            setKeywords((prev) =>
+                prev.map((kw) =>
+                    kw.id === keywordId ? { ...kw, text: updatedKeyword.name } : kw
+                )
+            );
+
             setModal(null);
         } catch (error) {
             console.error("키워드 저장 실패:", error);
