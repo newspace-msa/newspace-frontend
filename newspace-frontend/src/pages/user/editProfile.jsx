@@ -177,18 +177,24 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
-    // 프로필 이미지 업로드
-    const handleProfileUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result);
-            };
-            reader.readAsDataURL(file);
-            setUploadedFile(file);
+    const handleProfileUpdate = async (formData) => {
+        try {
+            const response = await axios.post('/api/update-profile', formData);
+            const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data.file}`; // 서버로부터 받은 새 이미지 경로
+    
+            // 사용자 상태 업데이트
+            onUpdateUser({
+                ...user,
+                profileImage: newProfileImageUrl
+            });
+            
+            alert('프로필 이미지 수정 성공');
+        } catch (error) {
+            console.error('프로필 이미지 업데이트 실패:', error);
+            alert('프로필 이미지 수정에 실패했습니다.');
         }
     };
+    
 
     // 프로필 이미지 삭제
     const handleProfileDelete = async () => {
@@ -235,6 +241,7 @@ const EditProfileModal = ({ user, onClose }) => {
             setProfileImage(updatedUserInfo.profileImage);
             alert("개인정보가 수정되었습니다.");
             onClose();
+            window.location.reload();
             // 상태를 업데이트하여 실시간 반영
             setUser((prevUser) => ({
                 ...prevUser,
