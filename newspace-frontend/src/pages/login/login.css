@@ -20,6 +20,12 @@
     width: 150px;
 }
 
+/* ID, PASSWORD 라벨을 검은색으로 설정 */
+.login-input-group label {
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+}
 
 .login-form {
     display: flex;
