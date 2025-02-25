@@ -204,8 +204,9 @@ const EditProfileModal = ({ onClose }) => {
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
                 setUser((prevUser) => {
-                    console.log("🔄 [사용자 이전 정보]:", prevUser);
-                    return { ...prevUser, profileImage: newProfileImageUrl };
+                    const updatedUser = { ...prevUser, profileImage: newProfileImageUrl };
+                    localStorage.setItem("user", JSON.stringify(updatedUser)); // localStorage 업데이트
+                    return updatedUser;
                 });
     
             } catch (error) {
@@ -226,9 +227,13 @@ const EditProfileModal = ({ onClose }) => {
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
-            setUser((prevUser) => ({ ...prevUser, profileImage: "" })); 
 
-            setUploadedFile(null);
+            setUser((prevUser) => {
+                const updatedUser = { ...prevUser, profileImage: "" };
+                localStorage.setItem("user", JSON.stringify(updatedUser)); // localStorage 업데이트
+            return updatedUser;
+        });
+
         } catch (error) {
             console.error(" [프로필 삭제 실패]", error);
             setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
