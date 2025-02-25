@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fetchCategories, addCategory, updateCategory, deleteCategory } from "../../api/categoryApi";
+import { useAuth } from "../../context/AuthContext"; 
 
 import logo1 from "../../assets/newspace_logo1.png"; 
 import { Banknote, Building, Users, Landmark, Plus, Book, Newspaper, Globe, Briefcase, 
@@ -31,7 +32,7 @@ const SidebarLogo = styled.img`
     margin-bottom: 10px; 
 `;
 
-const SidebarItem = styled(Link)`
+const SidebarItem = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -207,6 +208,7 @@ const iconMap = iconOptions.reduce((acc, icon) => {
 
 
 const Sidebar = () => {
+    const { user, isAuthorized } = useAuth(); // 로그인 상태 확인
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [newCategory, setNewCategory] = useState("");
@@ -214,7 +216,6 @@ const Sidebar = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [popup, setPopup] = useState(null);
     const categoryRefs = useRef({}); 
-    const [userRole, setUserRole] = useState(null);
 
     //카테고리 조회
     useEffect(() => {
@@ -228,6 +229,15 @@ const Sidebar = () => {
         };
         loadCategories();
     }, []);
+
+    // 카테고리 클릭 시 로그인 확인 후 이동
+    const handleCategoryClick = (categoryName) => {
+        if (!isAuthorized) {
+            navigate("/login");
+        } else {
+            navigate(`/news/${encodeURIComponent(categoryName)}`);
+        }
+    };
 
     // 카테고리 추가 & 수정
     const handleSave = async () => {
@@ -271,6 +281,7 @@ const Sidebar = () => {
     // 카테고리 우클릭시 팝업창 뜨기
     const handleRightClick = (event, category) => {
         event.preventDefault();
+        if (user?.role !== "ADMIN") return; // ADMIN이 아니면 무시
         console.log("우클릭 이벤트 감지됨:", category);
 
         if (categoryRefs.current[category.id]) {
@@ -342,7 +353,7 @@ const Sidebar = () => {
             {categories.map((category) => (
                 <SidebarItem 
                     key={category.id} 
-                    to={`/news/${encodeURIComponent(category.name)}`}
+                    onClick={() => handleCategoryClick(category.name)}
                     ref={(el) => (categoryRefs.current[category.id] = el)}
                     onContextMenu={(e) => handleRightClick(e, category)}
                 >
@@ -372,7 +383,7 @@ const Sidebar = () => {
                 </div>
 
             {/* 추가 버튼(카테고리 최대 8개 제한) */}
-            {userRole === "ADMIN" && (
+            {user?.role === "ADMIN" && (
                 <AddCategoryButton 
                     onClick={() => setShowModal(true)} 
                     disabled={categories.length >= 8}
