@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { FiLogOut } from "react-icons/fi";
 
 import EditProfileModal from "./editProfile";
+const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
+
 
 const DropdownMenu = styled.div`
     position: absolute;
@@ -78,20 +80,24 @@ const LogoutIcon = styled(FiLogOut)`
     margin-bottom: 5px;
 `;
 
-const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
-    const [user, setUser] = useState(initialUser); 
-    const [isModalOpen, setModalOpen] = useState(false); 
-    
+const UserToggle = ({ isDropdownOpen, user, logout }) => {
+    const [currentUser, setCurrentUser] = useState(user);
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const updateUser = (updatedUserInfo) => {
+        setCurrentUser({ ...currentUser, ...updatedUserInfo });
+    };
+
     return (
         <>
-            <DropdownMenu className="user-dropdown" open={isDropdownOpen}>
-                <ProfileImage 
-                    src={user?.image 
-                            ? `${BASE_URL}/api/user/image${user.image}` 
-                            : profile}
-                    alt="프로필" 
+            <DropdownMenu open={isDropdownOpen}>
+                <ProfileImage
+                    src={currentUser?.image
+                            ? `${BASE_URL}/api/user/image${currentUser.image}`
+                            : "defaultProfile.jpg"}
+                    alt="프로필"
                 />
-                <UserName>{user?.name}</UserName>
+                <UserName>{currentUser?.name}</UserName>
                 <EditProfileButton onClick={() => setModalOpen(true)}>
                     개인정보 수정
                 </EditProfileButton>
@@ -103,15 +109,13 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
 
             {isModalOpen && (
                 <EditProfileModal
-                    user={user}
-                    profile={profile}
-                    onUpdateUser={(updatedUser) => setUser(updatedUser)}
+                    user={currentUser}
+                    onUpdateUser={updateUser}
                     onClose={() => setModalOpen(false)}
                 />
             )}
         </>
     );
-
 };
 
 export default UserToggle;

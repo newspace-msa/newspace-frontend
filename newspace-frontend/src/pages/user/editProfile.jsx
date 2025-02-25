@@ -2,10 +2,10 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
-import defaultProfile from "../../assets/profile.png"; // 기본 프로필 이미지(삭제 시)
-import { updateUserInfo } from "../../api/userinfoApi"; // API 호출 함수 임포트 - 영서 개인정보수정 api
-//프로필 이미지지 API
-import { createProfileImage, updateProfileImage, deleteProfileImage,  } from "../../api/profileApi";
+import defaultProfile from "../../assets/profile.png";
+import { updateUserInfo } from "../../api/userinfoApi";
+import { createProfileImage, updateProfileImage, deleteProfileImage } from "../../api/profileApi";
+import axios from "axios";
 
 // editProfile.jsx 상단에 BASE_URL 추가
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
@@ -158,7 +158,7 @@ const EditProfileModal = ({ user, onClose }) => {
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    // 프로필 이미지 다운로드
+    // 프로필 이미지 다운로드 핸들러
     const handleProfileDownload = async () => {
         try {
             if (profileImage && profileImage !== defaultProfile) {
@@ -172,42 +172,25 @@ const EditProfileModal = ({ user, onClose }) => {
                 alert("다운로드할 이미지가 없습니다.");
             }
         } catch (error) {
-            console.error("❌ [프로필 다운로드 실패]", error);
+            console.error("프로필 다운로드 실패", error);
             setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
-    const handleProfileUpdate = async (formData) => {
-        try {
-            const response = await axios.post('/api/update-profile', formData);
-            const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data.file}`; // 서버로부터 받은 새 이미지 경로
+
     
-            // 사용자 상태 업데이트
-            onUpdateUser({
-                ...user,
-                profileImage: newProfileImageUrl
-            });
-            
-            alert('프로필 이미지 수정 성공');
-        } catch (error) {
-            console.error('프로필 이미지 업데이트 실패:', error);
-            alert('프로필 이미지 수정에 실패했습니다.');
-        }
-    };
-    
+    // 프로필 이미지 업로드 핸들러
     const handleProfileUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            // 파일을 FormData 객체에 추가
-            const formData = new FormData();
-            formData.append('image', file);
-    
             try {
-                // 서버에 이미지를 업로드하는 API 호출
-                const response = await createProfileImage(formData);
-    
-                // 응답으로 받은 이미지 URL로 상태 업데이트
-                setProfileImage(`${BASE_URL}/api/user/image${response.data.file}`);
+                // 파일 객체를 직접 전달 (API 내부에서 FormData 생성)
+                const response = await createProfileImage(file);
+                // 백엔드가 파일 경로 문자열을 반환한다고 가정하고 URL 생성
+                const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data}`;
+                setProfileImage(newProfileImageUrl);
+                // 상위 컴포넌트의 사용자 정보 업데이트 (키는 profileImage로 통일)
+                onUpdateUser({ profileImage: newProfileImageUrl });
                 setUploadedFile(file);
             } catch (error) {
                 console.error("프로필 이미지 업로드 실패:", error);
@@ -215,21 +198,24 @@ const EditProfileModal = ({ user, onClose }) => {
             }
         }
     };
-    
 
-    // 프로필 이미지 삭제
+    // 프로필 이미지 삭제 핸들러
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
             setProfileImage(defaultProfile);
+            onUpdateUser({ profileImage: defaultProfile });
             setUploadedFile(null);
         } catch (error) {
-            console.error("❌ [프로필 삭제 실패]", error);
+            console.error(" [프로필 삭제 실패]", error);
             setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
-    // 수정 완료 (저장) 핸들러
+
+
+
+    // 개인정보 수정 완료 핸들러
     const handleSave = async () => {
         setErrorMessage("");
 
@@ -251,25 +237,19 @@ const EditProfileModal = ({ user, onClose }) => {
         };
 
         try {
-            // 프로필 이미지가 변경된 경우에만 업데이트
+            // 프로필 이미지가 변경된 경우, 별도의 API 호출로 업데이트
             if (uploadedFile) {
                 await updateProfileImage(uploadedFile);
             }
             // 닉네임, 비밀번호 업데이트
             const updatedUserInfo = await updateUserInfo(updateData);
-
-            setNickname(updatedUserInfo.nickname);
-            setProfileImage(updatedUserInfo.profileImage);
-            alert("개인정보가 수정되었습니다.");
-            
-            window.location.reload();
-            // 상태를 업데이트하여 실시간 반영
-            setUser((prevUser) => ({
-                ...prevUser,
+            // 상위 컴포넌트 상태 업데이트 (프로필 사진과 닉네임)
+            onUpdateUser({
                 nickname: updatedUserInfo.nickname,
                 profileImage: updatedUserInfo.profileImage
-            }));
-
+            });
+            alert("개인정보가 수정되었습니다.");
+            window.location.reload(); // 메인 뉴스 화면 반영을 위해 새로고침
             onClose();
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
@@ -277,7 +257,7 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
 
-    // 수정 완료 버튼 활성화 조건
+    // 아무 변경사항이 없어도 버튼은 활성화 (요구사항)
     const isSaveDisabled = false;
 
 
@@ -320,6 +300,7 @@ const EditProfileModal = ({ user, onClose }) => {
                 </UserInfoContainer>
 
                 <SaveButton onClick={handleSave} disabled={isSaveDisabled}>수정 완료</SaveButton>
+                {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             </ModalContainer>
         </Overlay>
     );
