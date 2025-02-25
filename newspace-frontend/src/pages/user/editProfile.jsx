@@ -200,9 +200,13 @@ const EditProfileModal = ({ onClose }) => {
 
                 // 백엔드가 반환하는 새로운 프로필 이미지 경로를 받아와 적용
                 const newProfileImageUrl = `${BASE_URL}/api/user/image${imageUrl}`;
+                console.log("🔄 [새 프로필 이미지 URL]:", newProfileImageUrl);
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
-                setUser((prevUser) => ({ ...prevUser, profileImage: newProfileImageUrl }));
+                setUser((prevUser) => {
+                    console.log("🔄 [사용자 이전 정보]:", prevUser);
+                    return { ...prevUser, profileImage: newProfileImageUrl };
+                });
     
             } catch (error) {
                 console.error("❌ [프로필 이미지 업로드 실패]", error);
