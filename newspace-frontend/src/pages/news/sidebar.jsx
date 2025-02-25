@@ -346,9 +346,8 @@ const Sidebar = () => {
     return (
         <SidebarContainer>
 
-            <Link to="/news/main">
-                <SidebarLogo src={logo1} alt="Logo" />
-            </Link>
+            <SidebarLogo src={logo1} alt="Logo" onClick={() => navigate("/news/main")} />
+            
             <div style={{ position: "relative" }} onClick={closePopup}>
             {categories.map((category) => (
                 <SidebarItem 
