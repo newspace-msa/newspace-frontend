@@ -234,7 +234,7 @@ const EditProfileModal = ({ user, onClose }) => {
             setNickname(updatedUserInfo.nickname);
             setProfileImage(updatedUserInfo.profileImage);
             alert("개인정보가 수정되었습니다.");
-            
+            onClose();
             // 상태를 업데이트하여 실시간 반영
             setUser((prevUser) => ({
                 ...prevUser,
