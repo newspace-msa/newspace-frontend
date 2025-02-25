@@ -155,16 +155,9 @@ const EditProfileModal = ({ onClose }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [tempProfile, setTempProfile] = useState(user?.profileImage); // UI에서 즉시 반영용 상태
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
-
-    // 🔄 localStorage에서 변경된 user를 즉시 가져오도록 함
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-        }
-    }, []);
 
     const profileImage = user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile;
 
@@ -206,9 +199,9 @@ const EditProfileModal = ({ onClose }) => {
                     throw new Error("백엔드 응답이 올바르지 않습니다.");
                 } 
 
-                // 백엔드가 반환하는 새로운 프로필 이미지 경로를 받아와 적용
-                const newProfileImageUrl = `${BASE_URL}/api/user/image${imageUrl}`;
-                console.log("🔄 [새 프로필 이미지 URL]:", newProfileImageUrl);
+                // UI에서 즉시 반영
+                setTempProfile(imageUrl);
+                console.log("🔄 [새 프로필 이미지 URL]:", imageUrl);
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
                 setUser((prevUser) => {
@@ -235,7 +228,7 @@ const EditProfileModal = ({ onClose }) => {
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
-
+            setTempProfile(null);
             setUser((prevUser) => {
                 const updatedUser = { ...prevUser, profileImage: "" };
                 localStorage.setItem("user", JSON.stringify(updatedUser)); // localStorage 업데이트
@@ -274,16 +267,17 @@ const EditProfileModal = ({ onClose }) => {
 
         try {
             const updatedUserInfo = await updateUserInfo(updateData);
-
+            if (!updatedUserInfo) throw new Error("서버 응답 오류: 업데이트 정보가 없습니다.");
+            
             // AuthContext의 user 업데이트
-            setUser((prevUser) => ({
-                ...prevUser,
-                nickname: updatedUserInfo.nickname
-            }));
+            setUser((prevUser) => {
+                const updatedUser = { ...prevUser, nickname: updatedUserInfo.nickname, profileImage: tempProfile };
+                localStorage.setItem("user", JSON.stringify(updatedUser));
+                return updatedUser;
+            });
 
             alert("개인정보가 수정되었습니다.");
             window.location.reload(); // 메인 뉴스 화면 반영을 위해 새로고침
-            onClose();
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
             setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
