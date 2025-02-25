@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -257,6 +257,7 @@ const NewsKeyword = () => {
     // 입력값을 문자열로 유지
     const handleInputChange = (e) => {
         const value = e.target.value;
+        console.log("입력값:", value, "타입:", typeof value); 
         setInputValue(String(value));  
     };
 
@@ -365,6 +366,7 @@ const NewsKeyword = () => {
                         <FlexBox>
                             <LabelContainer>키워드</LabelContainer>
                             <InputField 
+                                type="text"
                                 value={inputValue} 
                                 onChange={handleInputChange} 
                             />
