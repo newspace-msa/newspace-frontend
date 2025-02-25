@@ -169,32 +169,23 @@ const EditProfileModal = ({ onClose }) => {
                 return;
             }
     
-            // 서버에서 이미지 Blob 데이터 가져오기
-            const blobData = await downloadProfileImage();
+            // 서버에서 실제 다운로드할 URL 가져오기
+            const fileUrl = await downloadProfileImage();
 
-            // 파일 확장자 추출 
-            const fileExtension = user.profileImage.split(".").pop();
-            fileExtension = fileExtension && fileExtension.length <= 5 ? fileExtension : "png"; 
-
-            // Blob 데이터를 실제 파일로 변환하여 다운로드
-            const blobUrl = URL.createObjectURL(blobData);
+            // <a> 태그를 활용한 즉시 다운로드
             const link = document.createElement("a");
-            link.href = blobUrl;
-            link.setAttribute("download", `profile_image.${fileExtension}`); // 파일명 설정
+            link.href = fileUrl;
+            link.setAttribute("download", "profile_image.png"); // 파일명 설정
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            console.log("✅ 프로필 이미지 다운로드 성공:", link.download);
-
-            // Blob URL 메모리 해제 
-            URL.revokeObjectURL(blobUrl);
-
+            console.log("✅ 프로필 이미지 다운로드 성공:", fileUrl);
         } catch (error) {
             console.error("❌ 프로필 이미지 다운로드 실패", error);
             alert("프로필 이미지 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
-    };
+};
 
 
 
