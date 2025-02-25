@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 import logo from '../../assets/newspace_logo1.png';
+import { useAuth } from "../../context/AuthContext";
 import { signupApi, checkIdApi } from '../../api/signupApi'; // signupApi와 checkIdApi 임포트
-import axios from 'axios'; // axios 임포트 추가
 
 function Signup() {
     const [birthYear, setBirthYear] = useState('2000');
@@ -75,6 +75,7 @@ function Signup() {
         try {
             await signupApi(userInfo);
             alert('🎉 회원가입 완료!');
+
             resetForm();
             navigate('/news/main');
         } catch (error) {
@@ -134,6 +135,26 @@ function Signup() {
                             <label htmlFor="nickname">닉네임</label>
                             <input type="text" id="nickname" value={nickname} onChange={e => setNickname(e.target.value)} required className="signup-input-text" />
                         </div>
+                        <div className="signup-input-group">
+                            <label htmlFor="birthdate">생년월일</label>
+                            <div className="signup-date-selectors">
+                                <select value={birthYear} onChange={e => setBirthYear(e.target.value)}>
+                                    {years.map(year => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                                </select>
+                                <select value={birthMonth} onChange={e => setBirthMonth(e.target.value)}>
+                                    {months.map(month => (
+                                        <option key={month} value={month}>{month}</option>
+                                    ))}
+                                </select>
+                                <select value={birthDay} onChange={e => setBirthDay(e.target.value)}>
+                                    {days.map(day => (
+                                        <option key={day} value={day}>{day}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            </div>
                         <button type="submit" className="signup-button">가입하기</button>
                     </form>
                 </div>
