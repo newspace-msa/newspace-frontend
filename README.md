@@ -5,7 +5,7 @@
 
 ## 📍 프로젝트명: Newspace
 
-<img src="https://raw.githubusercontent.com/LG-CNS-AM-Inspire-Camp-ai-project-1/newspace-frontend/raw/main/newspace-frontend/src/assets/newspace_logo1.png" width="250" height="250" />
+![프로젝트 로고](https://raw.githubusercontent.com/LG-CNS-AM-Inspire-Camp-ai-project-1/newspace-frontend/main/src/assets/newspace_logo1.png)
 <br>
 
 
