@@ -15,6 +15,7 @@ const NoticeWrapper = styled.div`
 
 const NoticeContainer = styled.div`
     width: 490px;
+    height: 30px;
     padding: 10px 10px;
     border: 2px solid #1D7F81;
     border-radius: 8px;
@@ -83,6 +84,19 @@ const Notice = () => {
         return localStorage.getItem("hasNotice") === "true"; //  로컬 스토리지에서 공지 존재 여부 가져오기
     });
     const [userRole, setUserRole] = useState(null);
+
+    const MAX_NOTICE_LENGTH = 50; // 최대 글자 수 설정
+
+    const handleNoticeChange = (e) => {
+        const inputText = e.target.value;
+        
+        if (inputText.length > MAX_NOTICE_LENGTH) {
+            alert(`공지사항은 최대 ${MAX_NOTICE_LENGTH}자까지 입력할 수 있습니다.`);
+            return;
+        }
+        
+        setNoticeText(inputText);
+    };
 
     // 공지 조회 (최초 로딩 시 실행)
     useEffect(() => {
@@ -165,6 +179,7 @@ const Notice = () => {
                             value={noticeText} 
                             onChange={(e) => setNoticeText(e.target.value)}
                             placeholder="공지 내용을 입력하세요"
+                            maxLength={MAX_NOTICE_LENGTH} 
                         />
                     ) : (
                         <NoticeText>{noticeText || "등록된 공지가 없습니다."}</NoticeText>
