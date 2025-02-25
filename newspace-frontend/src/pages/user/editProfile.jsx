@@ -180,11 +180,6 @@ const EditProfileModal = ({ user, onClose }) => {
     const handleProfileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // 📌 .jpg 형식만 허용
-            if (!file.type.includes("jpeg") && !file.type.includes("jpg")) {
-                alert("JPG 형식의 이미지만 업로드 가능합니다.");
-                return;
-            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileImage(reader.result);
@@ -236,19 +231,10 @@ const EditProfileModal = ({ user, onClose }) => {
             }
             const updatedUserInfo = await updateUserInfo(updateData);
 
-            // 📌 상태 업데이트 및 실시간 반영
-            setUser((prevUser) => ({
-                ...prevUser,
-                nickname: updatedUserInfo.nickname,
-                profileImage: updatedUserInfo.profileImage
-            }));
-
             setNickname(updatedUserInfo.nickname);
-            setProfileImage(updatedUserInfo.profileImage);
+            setProfileImage(getProfileImageUrl(updatedUserInfo.profileImage));
             alert("개인정보가 수정되었습니다.");
             onClose();
-            // 페이지 새로고침 (로그인 상태 반영)
-            window.location.reload();
         } catch (error) {
             console.error("❌ [개인정보 수정 실패]", error);
             setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
