@@ -195,29 +195,6 @@ const EditProfileModal = ({ onClose }) => {
             alert("프로필 이미지 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
     };
-
-    const testDownload = async () => {
-        try {
-            const response = await downloadProfileImage();
-            console.log("📥 [서버 응답]:", response);
-    
-            if (response instanceof Blob) {
-                console.log("✅ 서버에서 Blob 데이터를 반환함!");
-            } else if (typeof response === "string") {
-                console.log("✅ 서버에서 파일 경로 (string)를 반환함!");
-            } else {
-                console.log("❌ 예상치 못한 응답 형식:", response);
-            }
-        } catch (error) {
-            console.error("❌ 테스트 중 오류 발생:", error);
-        }
-    };
-    
-    const handleTestDownload = () => {
-        testDownload();
-    };
-
-
     
     // 프로필 이미지 업로드 핸들러
     const handleProfileUpload = async (event) => {
@@ -333,7 +310,6 @@ const EditProfileModal = ({ onClose }) => {
                         <IconButton onClick={() => fileInputRef.current.click()}><FiUpload /></IconButton>
                         <IconButton onClick={handleProfileDownload}><FiDownload /></IconButton>
                         <IconButton onClick={handleProfileDelete}><FiTrash2 /></IconButton>
-                        <button onClick={handleTestDownload}>다운로드 테스트</button>
                     </ProfileActions>
                     <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleProfileUpload} />
                 </ProfileSection>
