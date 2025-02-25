@@ -36,7 +36,7 @@ const KeywordContainer = styled.div`
     height: 100%;
 `;
 
-const Keyword = styled(Link)`
+const Keyword = styled.div`
     position: absolute;
     font-size: ${({ size }) => size || "16px"};
     font-weight: bold;
@@ -47,6 +47,7 @@ const Keyword = styled(Link)`
     cursor: pointer;
     text-decoration: none;
     transition: transform 0.2s ease, color 0.2s ease;
+    role: button;
 
     &:hover {
         transform: translate(-50%, -50%) scale(1.1);
@@ -307,7 +308,8 @@ const NewsKeyword = () => {
     };
 
     // 키워드 클릭 시 로그인 상태 확인 후 이동
-    const handleKeywordClick = (keywordText) => {
+    const handleKeywordClick = (event, keywordText) => {
+        event.stopPropagation(); // 클릭 이벤트 전파 방지
         if (!isAuthorized) {
             navigate("/login"); // 로그인 안 한 경우 로그인 페이지로 이동
         } else {
@@ -328,7 +330,7 @@ const NewsKeyword = () => {
                         color={keyword.color}
                         top={keyword.top}
                         left={keyword.left}
-                        onClick={() => handleKeywordClick(keyword.text)} // 클릭 이벤트 처리
+                        onClick={(e) => handleKeywordClick(e, keyword.text)} // 클릭 이벤트 처리
                         onContextMenu={(e) => handleRightClick(e, keyword)}
                     >
                         {keyword.text}
