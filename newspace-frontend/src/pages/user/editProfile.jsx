@@ -191,7 +191,7 @@ const EditProfileModal = ({ onClose }) => {
 
                 // 파일 객체를 직접 전달 (API 내부에서 FormData 생성)
                 const imageUrl = await createProfileImage(file);
-                console.log("✅ [프로필 이미지 업로드 성공] 응답:", response);
+                console.log("✅ [프로필 이미지 업로드 성공] 파일 경로:", imageUrl);
 
                 if (!imageUrl) {
                     console.error("❌ [응답 오류] 이미지 URL이 없습니다.");

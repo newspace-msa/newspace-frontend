@@ -21,11 +21,11 @@ export const createProfileImage = async (file) => {
         console.log('[프로필 사진 등록 성공]', response.data);
 
         // response.data가 없는 경우 예외 처리
-        if (!response.data || !response.data.profileImage) {
+        if (!response.data || !response.data.file) {
             console.error("❌ [서버 응답 오류] response.data가 없습니다:", response);
             throw new Error("서버 응답에 프로필 이미지 정보가 포함되지 않았습니다.");
         }
-        return response.data.profileImage;
+        return response.data.file;
     } catch (error) {
         console.error('[프로필 사진 등록 실패]', error);
         throw error;
