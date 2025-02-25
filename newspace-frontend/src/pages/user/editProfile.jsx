@@ -155,11 +155,11 @@ const EditProfileModal = ({ onClose }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [tempProfile, setTempProfile] = useState(user?.profileImage); // UI에서 즉시 반영용 상태
+    const [profileImage, setProfileImage] = useState(user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile); 
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
 
-    const profileImage = user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile;
+    
 
     // 프로필 이미지 다운로드 핸들러
     const handleProfileDownload = async () => {
@@ -194,14 +194,11 @@ const EditProfileModal = ({ onClose }) => {
                 const imageUrl = await createProfileImage(file);
                 console.log("✅ [프로필 이미지 업로드 성공] 파일 경로:", imageUrl);
 
-                if (!imageUrl) {
-                    console.error("❌ [응답 오류] 이미지 URL이 없습니다.");
-                    throw new Error("백엔드 응답이 올바르지 않습니다.");
-                } 
+                if (!imageUrl) throw new Error("서버 응답 오류: 이미지 URL이 없습니다.");
 
-                // UI에서 즉시 반영
-                setTempProfile(imageUrl);
-                console.log("🔄 [새 프로필 이미지 URL]:", imageUrl);
+                // ✅ UI에서 즉시 반영
+                setProfileImage(`${BASE_URL}/api/user/image${imageUrl}`);
+
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
                 setUser((prevUser) => {
@@ -210,16 +207,10 @@ const EditProfileModal = ({ onClose }) => {
                     return updatedUser;
                 });
     
-            } catch (error) {
-                console.error("❌ [프로필 이미지 업로드 실패]", error);
-
-                if (error.response) {
-                    console.error("❌ [응답 상태 코드]:", error.response.status);
-                    console.error("❌ [응답 데이터]:", error.response.data);
+                } catch (error) {
+                    console.error("❌ [프로필 이미지 업로드 실패]", error);
+                    setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
                 }
-
-                setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
-            }
         }
     };
     
@@ -228,7 +219,8 @@ const EditProfileModal = ({ onClose }) => {
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
-            setTempProfile(null);
+            setProfileImage(defaultProfile);
+
             setUser((prevUser) => {
                 const updatedUser = { ...prevUser, profileImage: "" };
                 localStorage.setItem("user", JSON.stringify(updatedUser)); // localStorage 업데이트
@@ -271,7 +263,7 @@ const EditProfileModal = ({ onClose }) => {
             
             // AuthContext의 user 업데이트
             setUser((prevUser) => {
-                const updatedUser = { ...prevUser, nickname: updatedUserInfo.nickname, profileImage: tempProfile };
+                const updatedUser = { ...prevUser, nickname: updatedUserInfo.nickname, profileImage };
                 localStorage.setItem("user", JSON.stringify(updatedUser));
                 return updatedUser;
             });
@@ -283,10 +275,6 @@ const EditProfileModal = ({ onClose }) => {
             setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
-
-    // 아무 변경사항이 없어도 버튼은 활성화 (요구사항)
-    const isSaveDisabled = false;
-
 
     return (
         <Overlay onClick={onClose}>
@@ -326,7 +314,7 @@ const EditProfileModal = ({ onClose }) => {
                     </InputContainer>
                 </UserInfoContainer>
 
-                <SaveButton onClick={handleSave} disabled={isSaveDisabled}>수정 완료</SaveButton>
+                <SaveButton onClick={handleSave} >수정 완료</SaveButton>
                 {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             </ModalContainer>
         </Overlay>
