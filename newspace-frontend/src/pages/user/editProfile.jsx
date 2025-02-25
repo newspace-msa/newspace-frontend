@@ -175,8 +175,8 @@ const EditProfileModal = ({ onClose }) => {
                 alert("다운로드할 이미지가 없습니다.");
             }
         } catch (error) {
-            console.error("프로필 다운로드 실패", error);
-            setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
+            //console.error("프로필 다운로드 실패", error);
+            //setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -196,9 +196,12 @@ const EditProfileModal = ({ onClose }) => {
 
                 if (!imageUrl) throw new Error("서버 응답 오류: 이미지 URL이 없습니다.");
 
-                // ✅ UI에서 즉시 반영
-                setProfileImage(`${BASE_URL}/api/user/image${imageUrl}`);
+                // ✅ 올바른 새 프로필 이미지 URL 생성
+                const newProfileImageUrl = `${BASE_URL}/api/user/image${imageUrl}`;
+                console.log("🔄 [새 프로필 이미지 URL]:", newProfileImageUrl);
 
+                // ✅ UI에서 즉시 반영
+                setProfileImage(newProfileImageUrl);
     
                 // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
                 setUser((prevUser) => {
@@ -219,13 +222,14 @@ const EditProfileModal = ({ onClose }) => {
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
+
             setProfileImage(defaultProfile);
 
             setUser((prevUser) => {
-                const updatedUser = { ...prevUser, profileImage: "" };
+                const updatedUser = { ...prevUser, profileImage: null };
                 localStorage.setItem("user", JSON.stringify(updatedUser)); // localStorage 업데이트
-            return updatedUser;
-        });
+                return updatedUser;
+            });
 
         } catch (error) {
             console.error(" [프로필 삭제 실패]", error);
