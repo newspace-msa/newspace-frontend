@@ -123,7 +123,7 @@ const Divider = styled.div`
     width: 85%;
     height: 2px;
     background-color: #ddd;
-    z-index: -1;
+    z-index: 0;
 `;
 
 
