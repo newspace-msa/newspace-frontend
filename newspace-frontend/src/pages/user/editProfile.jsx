@@ -5,7 +5,7 @@ import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext"; 
 import defaultProfile from "../../assets/profile.png";
 import { updateUserInfo } from "../../api/userinfoApi";
-import { createProfileImage, updateProfileImage, deleteProfileImage } from "../../api/profileApi";
+import { createProfileImage, deleteProfileImage, downloadProfileImage } from "../../api/profileApi";
 
 // editProfile.jsx 상단에 BASE_URL 추가
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
@@ -164,19 +164,36 @@ const EditProfileModal = ({ onClose }) => {
     // 프로필 이미지 다운로드 핸들러
     const handleProfileDownload = async () => {
         try {
-            if (profileImage && profileImage !== defaultProfile) {
-                const link = document.createElement("a");
-                link.href = profileImage;
-                link.download = "profile_image.png";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                alert("다운로드할 이미지가 없습니다.");
+            if (!user?.profileImage) {
+                alert("다운로드할 프로필 이미지가 없습니다.");
+                return;
             }
+    
+            // 서버에서 이미지 Blob 데이터 가져오기
+            const blobData = await downloadProfileImage();
+
+            // 파일 확장자 추출 
+            const fileExtension = user.profileImage.split(".").pop();
+            fileExtension = fileExtension && fileExtension.length <= 5 ? fileExtension : "png"; 
+
+            // Blob 데이터에서 URL 생성
+            const blobUrl = URL.createObjectURL(blobData);
+
+            // 다운로드 링크 생성 및 실행
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = `profile_image.${fileExtension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Blob URL 메모리 해제 (메모리 누수 방지)
+            URL.revokeObjectURL(blobUrl);
+
+            console.log("✅ 프로필 이미지 다운로드 성공:", link.download);
         } catch (error) {
-            //console.error("프로필 다운로드 실패", error);
-            //setErrorMessage("프로필 다운로드에 실패했습니다. 다시 시도해주세요.");
+            console.error("❌ 프로필 이미지 다운로드 실패", error);
+            alert("프로필 이미지 다운로드에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
