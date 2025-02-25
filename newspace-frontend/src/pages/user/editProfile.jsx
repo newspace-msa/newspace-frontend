@@ -2,10 +2,10 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { FiUpload, FiTrash2, FiDownload, FiX } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext"; 
 import defaultProfile from "../../assets/profile.png";
 import { updateUserInfo } from "../../api/userinfoApi";
 import { createProfileImage, updateProfileImage, deleteProfileImage } from "../../api/profileApi";
-import axios from "axios";
 
 // editProfile.jsx 상단에 BASE_URL 추가
 const BASE_URL = `${import.meta.env.VITE_NEWSPACE_TEST_BACKEND_URL}`.replace(/\/$/, '');
@@ -149,14 +149,16 @@ const SaveButton = styled.button`
 
 
 
-const EditProfileModal = ({ user, onClose }) => {
+const EditProfileModal = ({ onClose }) => {
+    const { user, setUser } = useAuth();
     const [nickname, setNickname] = useState(user?.nickname || "");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileImage, setProfileImage] = useState(user ? user.profileImage : defaultProfile);
     const [errorMessage, setErrorMessage] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const fileInputRef = useRef(null);
+
+    const profileImage = user?.profileImage ? `${BASE_URL}/api/user/image${user.profileImage}` : defaultProfile;
 
     // 프로필 이미지 다운로드 핸들러
     const handleProfileDownload = async () => {
@@ -178,6 +180,7 @@ const EditProfileModal = ({ user, onClose }) => {
     };
 
 
+
     
     // 프로필 이미지 업로드 핸들러
     const handleProfileUpload = async (event) => {
@@ -186,25 +189,26 @@ const EditProfileModal = ({ user, onClose }) => {
             try {
                 // 파일 객체를 직접 전달 (API 내부에서 FormData 생성)
                 const response = await createProfileImage(file);
-                // 백엔드가 파일 경로 문자열을 반환한다고 가정하고 URL 생성
+                // 백엔드가 반환하는 새로운 프로필 이미지 경로를 받아와 적용
                 const newProfileImageUrl = `${BASE_URL}/api/user/image${response.data}`;
-                setProfileImage(newProfileImageUrl);
-                // 상위 컴포넌트의 사용자 정보 업데이트 (키는 profileImage로 통일)
-                onUpdateUser({ profileImage: newProfileImageUrl });
-                setUploadedFile(file);
+    
+                // 전역 AuthContext의 사용자 정보 업데이트 (setUser 적용)
+                setUser((prevUser) => ({ ...prevUser, profileImage: newProfileImageUrl }));
+    
             } catch (error) {
                 console.error("프로필 이미지 업로드 실패:", error);
                 setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
             }
         }
     };
+    
 
     // 프로필 이미지 삭제 핸들러
     const handleProfileDelete = async () => {
         try {
             await deleteProfileImage();
-            setProfileImage(defaultProfile);
-            onUpdateUser({ profileImage: defaultProfile });
+            setUser((prevUser) => ({ ...prevUser, profileImage: "" })); 
+
             setUploadedFile(null);
         } catch (error) {
             console.error(" [프로필 삭제 실패]", error);
@@ -237,17 +241,14 @@ const EditProfileModal = ({ user, onClose }) => {
         };
 
         try {
-            // 프로필 이미지가 변경된 경우, 별도의 API 호출로 업데이트
-            if (uploadedFile) {
-                await updateProfileImage(uploadedFile);
-            }
-            // 닉네임, 비밀번호 업데이트
             const updatedUserInfo = await updateUserInfo(updateData);
-            // 상위 컴포넌트 상태 업데이트 (프로필 사진과 닉네임)
-            onUpdateUser({
-                nickname: updatedUserInfo.nickname,
-                profileImage: updatedUserInfo.profileImage
-            });
+
+            // AuthContext의 user 업데이트
+            setUser((prevUser) => ({
+                ...prevUser,
+                nickname: updatedUserInfo.nickname
+            }));
+
             alert("개인정보가 수정되었습니다.");
             window.location.reload(); // 메인 뉴스 화면 반영을 위해 새로고침
             onClose();
