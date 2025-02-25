@@ -1,7 +1,7 @@
 //userToggle.jsx
 import { useState } from "react";
 import styled from "styled-components";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiUserX } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import defaultProfile from "../../assets/profile.png";
 
@@ -17,9 +17,9 @@ const DropdownMenu = styled.div`
     border: 2px solid #337477; 
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 220px;
+    width: 250px;
     display: ${(props) => (props.open ? "block" : "none")};
-    padding: 20px;
+    padding: 25px;
     text-align: center;
     z-index: 1002;
     pointer-events: auto;
@@ -79,7 +79,31 @@ const LogoutContainer = styled.div`
 const LogoutIcon = styled(FiLogOut)`
     font-size: 24px;
     color: #337477;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+`;
+
+const DeleteAccountButton = styled.button `
+    width: 100%;
+    padding: 10px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+        background: #cc0000;
+    }
+`;
+
+const DeleteIcon = styled(FiUserX)`
+    font-size: 22px;
 `;
 
 const UserToggle = ({ isDropdownOpen, logout }) => {
@@ -101,6 +125,10 @@ const UserToggle = ({ isDropdownOpen, logout }) => {
                     <LogoutIcon />
                     logout
                 </LogoutContainer>
+                <DeleteAccountButton>
+                    <DeleteIcon />
+                    회원 탈퇴
+                </DeleteAccountButton>
             </DropdownMenu>
 
             {isModalOpen && (
