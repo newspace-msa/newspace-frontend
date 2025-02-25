@@ -195,6 +195,27 @@ const EditProfileModal = ({ user, onClose }) => {
         }
     };
     
+    const handleProfileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // 파일을 FormData 객체에 추가
+            const formData = new FormData();
+            formData.append('image', file);
+    
+            try {
+                // 서버에 이미지를 업로드하는 API 호출
+                const response = await createProfileImage(formData);
+    
+                // 응답으로 받은 이미지 URL로 상태 업데이트
+                setProfileImage(`${BASE_URL}/api/user/image${response.data.file}`);
+                setUploadedFile(file);
+            } catch (error) {
+                console.error("프로필 이미지 업로드 실패:", error);
+                setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
+            }
+        }
+    };
+    
 
     // 프로필 이미지 삭제
     const handleProfileDelete = async () => {
@@ -240,7 +261,7 @@ const EditProfileModal = ({ user, onClose }) => {
             setNickname(updatedUserInfo.nickname);
             setProfileImage(updatedUserInfo.profileImage);
             alert("개인정보가 수정되었습니다.");
-            onClose();
+            
             window.location.reload();
             // 상태를 업데이트하여 실시간 반영
             setUser((prevUser) => ({

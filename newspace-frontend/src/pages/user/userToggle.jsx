@@ -81,13 +81,17 @@ const LogoutIcon = styled(FiLogOut)`
 const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
     const [user, setUser] = useState(initialUser); 
     const [isModalOpen, setModalOpen] = useState(false); 
-
+    
     return (
         <>
             <DropdownMenu className="user-dropdown" open={isDropdownOpen}>
-                {/* 🔥 수정된 프로필 이미지 반영 */}
-                <ProfileImage src={user.profileImage ? user.profileImage : profile} alt="프로필" />
-                <UserName>{user.name}</UserName>
+                <ProfileImage 
+                    src={user?.image 
+                            ? `${BASE_URL}/api/user/image${user.image}` 
+                            : profile}
+                    alt="프로필" 
+                />
+                <UserName>{user?.name}</UserName>
                 <EditProfileButton onClick={() => setModalOpen(true)}>
                     개인정보 수정
                 </EditProfileButton>
@@ -100,8 +104,8 @@ const UserToggle = ({ isDropdownOpen, user, profile, logout }) => {
             {isModalOpen && (
                 <EditProfileModal
                     user={user}
-                    onUpdateUser={(updatedUser) => setUser(updatedUser)} // 🔥 수정된 상태 업데이트
                     profile={profile}
+                    onUpdateUser={(updatedUser) => setUser(updatedUser)}
                     onClose={() => setModalOpen(false)}
                 />
             )}
