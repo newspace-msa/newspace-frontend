@@ -211,8 +211,8 @@ const EditProfileModal = ({ onClose }) => {
                 });
     
                 } catch (error) {
-                    console.error("❌ [프로필 이미지 업로드 실패]", error);
-                    setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
+                    // console.error("❌ [프로필 이미지 업로드 실패]", error);
+                    // setErrorMessage("프로필 이미지 업로드에 실패했습니다.");
                 }
         }
     };
@@ -232,8 +232,8 @@ const EditProfileModal = ({ onClose }) => {
             });
 
         } catch (error) {
-            console.error(" [프로필 삭제 실패]", error);
-            setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
+            // console.error(" [프로필 삭제 실패]", error);
+            // setErrorMessage("프로필 삭제에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -275,15 +275,20 @@ const EditProfileModal = ({ onClose }) => {
             alert("개인정보가 수정되었습니다.");
             window.location.reload(); // 메인 뉴스 화면 반영을 위해 새로고침
         } catch (error) {
-            console.error("❌ [개인정보 수정 실패]", error);
-            setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
+            //console.error("❌ [개인정보 수정 실패]", error);
+            //setErrorMessage("개인정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
+    const handleClose = () => {
+        onClose(); // 기존 모달 닫기 기능 수행
+        window.location.reload(); // 페이지 새로고침
+    };
+
     return (
-        <Overlay onClick={onClose}>
+        <Overlay onClick={handleClose}>
             <ModalContainer onClick={(e) => e.stopPropagation()}>
-                <CloseButton onClick={onClose}><FiX /></CloseButton>
+                <CloseButton onClick={handleClose}><FiX /></CloseButton>
                 <h3>개인정보 수정</h3>
 
                 <ProfileSection>

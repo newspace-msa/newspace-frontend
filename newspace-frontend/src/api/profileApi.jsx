@@ -27,7 +27,7 @@ export const createProfileImage = async (file) => {
         }
         return response.data.file;
     } catch (error) {
-        console.error('[프로필 사진 등록 실패]', error);
+        //console.error('[프로필 사진 등록 실패]', error);
         throw error;
     }
 };
@@ -58,7 +58,7 @@ export const deleteProfileImage = async () => {
         console.log('✅ [프로필 사진 삭제 성공]', response.data);
         return response.data;
     } catch (error) {
-        console.error('❌ [프로필 사진 삭제 실패]', error);
+        //console.error('❌ [프로필 사진 삭제 실패]', error);
         throw error;
     }
 };
