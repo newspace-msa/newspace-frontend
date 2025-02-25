@@ -330,19 +330,7 @@ const Sidebar = () => {
             document.removeEventListener("click", handleClickOutside);
         };
     }, [popup]);
-
-    // 회원정보 조회 (user role 확인)
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            const userInfo = await getUserInfo();
-            if (userInfo) {
-                setUserRole(userInfo.role);
-            }
-        };
-        fetchUserRole();
-    }, []);
     
-
 
     return (
         <SidebarContainer>
