@@ -37,7 +37,7 @@ function Signup() {
         try {
             const isAvailable = await checkIdApi(username);
             setIsUsernameAvailable(isAvailable);
-            console.error('영서', error);
+            console.log('백엔드 응답:', isAvailable);
             if (isAvailable) {
                 alert('✅ 사용 가능한 아이디입니다.');
             } else {
