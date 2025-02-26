@@ -317,7 +317,7 @@ const EditProfileModal = ({ onClose }) => {
                 <UserInfoContainer>
                     <UserInfoLeft>
                         <UserInfoText><Label>이름:</Label> {user?.name}</UserInfoText>
-                        <UserInfoText><Label>아이디:</Label> {user?.userid}</UserInfoText>
+                        <UserInfoText><Label>아이디:</Label> {user?.username}</UserInfoText>
                         <UserInfoText><Label>생년월일:</Label> {user?.birth}</UserInfoText>
                     </UserInfoLeft>
                     <InputContainer>
