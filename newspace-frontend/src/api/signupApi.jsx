@@ -34,8 +34,8 @@ export const checkIdApi = async (username) => {
         
         console.log('🌐 [아이디 중복 체크 응답 상태 코드]', response.status);
         if (response.status === 200) {
-            console.log('❌ [아이디 중복] 이미 사용 중인 아이디입니다.');
-            return false;  // 이미 사용 중인 아이디
+            console.log('✅ [아이디 중복 체크 성공] 사용 가능한 아이디입니다.');
+            return true;  // 이미 사용 중인 아이디
         }
     } catch (error) {
         if (error.response) {
@@ -43,8 +43,8 @@ export const checkIdApi = async (username) => {
 
             // 상태 코드에 따른 논리 수정
             if (error.response.status === 400) {
-                console.log('✅ [아이디 중복 체크 성공] 사용 가능한 아이디입니다.');
-                return true;  // 사용 가능한 아이디
+                console.log('❌ [아이디 중복] 이미 사용 중인 아이디입니다.');
+                return false;  // 사용 가능한 아이디
             } else {
                 console.error('❌ [아이디 중복 체크 실패] 알 수 없는 서버 오류', error.response.status);
                 alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
