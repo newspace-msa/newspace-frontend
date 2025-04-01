@@ -112,20 +112,20 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 
 ## 🧩 CI/CD 자동화 프로세스
 
-```plaintext
-GitHub (main 브랜치 push)
-        │
-        ▼
-  [ GitHub Webhook ]
-        │
-        ▼
-     [ Jenkins ]
-   - Vite 빌드 수행
-   - S3에 정적 파일 업로드
-   - ./index.html에 대해 CloudFront 캐시 무효화
-        │
-        ▼
- [ AWS S3 + CloudFront ]
+```
+        GitHub (main 브랜치 push)
+                  │
+                  ▼
+        [ **GitHub Webhook** ]
+                  │
+                  ▼
+            [ **Jenkins** ]
+        (1) Vite 빌드 수행
+        (2) S3에 정적 파일 업로드
+        (3) ./index.html에 대해 CloudFront 캐시 무효화
+                  │
+                  ▼
+        [ **AWS S3 + CloudFront** ]
 ```
 
 <br/>
