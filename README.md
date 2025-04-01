@@ -2,7 +2,7 @@
 
 <img src="https://github.com/user-attachments/assets/04d415b7-b379-4a0b-9aba-ff1d3609db85" width="300" />
 
-<br>
+<br/>
 
 ## 📌 프로젝트 개요
 
@@ -10,7 +10,7 @@ newspace-msa 프로젝트의 프론트엔드 애플리케이션은 React + Vite 
 AWS 인프라를 활용하여 **자동화된 CI/CD 배포 파이프라인**을 구성하였습니다.  
 Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 → 자동 배포**가 가능한 클라우드 환경을 구축했습니다.
 
-<br>
+<br/>
 ## 👩‍💻 팀원
 
 <table>
