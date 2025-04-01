@@ -14,7 +14,7 @@
         <!-- 첫 번째 팀원 -->
         <td align="center" width="50%">
             <img src="https://avatars.githubusercontent.com/js4939" alt="Avatar" width="100px"/><br/>
-            <a href="https://github.com/js4939">김지수</a>
+            <a href="https://github.com/js4939">지수</a>
             <br/>
             <img src="https://github-readme-stats.vercel.app/api?username=js4939&show_icons=true&theme=transparent" alt="Jisu's GitHub stats" width="350px"/>
         </td>
