@@ -19,32 +19,6 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 
 <br/>
 
-## 📡 프론트엔드 ↔ 백엔드 마이크로서비스 연동 구조
-
-- 프론트에서는 환경 변수(VITE_NEWSPACE_TEST_BACKEND_URL)를 통해 API Gateway 주소를 주입받습니다.
-
-- API 요청은 API Gateway를 거쳐 각 도메인별 마이크로서비스로 라우팅됩니다.
-
-- 프론트엔드는 백엔드와 REST API로 통신하며, 아래와 같은 방식으로 요청을 주고받습니다.
-
-```
-            [ 사용자 브라우저 ]
-                    │
-                    ▼
-     [ React 앱에서 axios로 HTTP 요청 ]
-                    │
-                    ▼
-       [ API Gateway (Spring Boot) ]
-                    │
-                    ▼
-           [ 각 마이크로서비스 ]
-                    │
-                    ▼
-             [ 공용 AWS RDS ]
-```
-
-<br/>
-
 ## 👩‍💻 팀원
 
 <table>
@@ -74,74 +48,6 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 
 <br/>
 
-## 📂 기존 Newspace Frontend 아키텍처
-
-```
-├── newspace-frontend
-│   ├── .metadata
-│   ├── .vite
-│   ├── node_modules
-│   ├── public
-│   │
-│   ├── src
-│   │   ├── api
-│   │   │   ├── categoryApi.jsx               // 카테고리 API
-│   │   │   ├── keywordApi.jsx                // 키워드 API
-│   │   │   ├── loginApi.jsx                  // 로그인 API
-│   │   │   ├── managerApi.jsx                // 관리자 공지 API
-│   │   │   ├── newsApi.jsx                   // AI 뉴스 API
-│   │   │   ├── profileApi.jsx                // 프로필 사진 API
-│   │   │   ├── signupApi.jsx                 // 회원가입 API
-│   │   │   └── userinfoApi.jsx               // 회원정보 API
-│   │   │
-│   │   ├── assets
-│   │   │   ├── newspace_logo1.png            // newspace 로고1
-│   │   │   ├── newspace_logo2.png            // newspace 로고2
-│   │   │   ├── profile.png                   // 프로필 디폴트 이미지
-│   │   │   └── react.svg                     // react logo
-│   │   │
-│   │   ├── context
-│   │   │   └── AuthContext.jsx               // 로그인 상태 확인 및 사용자 정보 관리
-│   │   │
-│   │   └── pages
-│   │       ├── login
-│   │       │   ├── login.css                 // 로그인 페이지 css
-│   │       │   └── login.jsx                 // 로그인 페이지
-│   │       ├── news
-│   │       │   ├── article.jsx               // 뉴스 기사 컴포넌트
-│   │       │   ├── keywords.jsx              // 키워드 컴포넌트
-│   │       │   ├── newsCategory.jsx          // 뉴스 카테고리 목록 페이지
-│   │       │   ├── newsDetail.jsx            // 뉴스 상세 페이지
-│   │       │   ├── newsMain.jsx              // 뉴스 메인 페이지
-│   │       │   ├── news_s.jsx                // 뉴스 메인 스타일
-│   │       │   ├── notice.jsx                // 관리자 공지 컴포넌트
-│   │       │   └── sidebar.jsx               // 사이드바 컴포넌트
-│   │       │
-│   │       │
-│   │       ├── signup
-│   │       │   ├── signup.css                 // 회원가입 페이지 css
-│   │       │   └── signup.jsx                 // 회원가입 페이지
-│   │       └── user
-│   │           ├── editProfile.jsx            // 개인정보수정 modal 컴포넌트
-│   │           └── userToggle.jsx             // 회원 toggle 컴포넌트
-│   │
-│   ├── App.css
-│   ├── App.jsx
-│   ├── index.css
-│   ├── main.jsx
-│   ├── .env
-│   ├── .gitignore
-│   ├── eslint.config.js
-│   ├── index.html
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── README.md
-│   └── vite.config.js
-│
-```
-
-<br/>
-
 ## 🧩 CI/CD 자동화 프로세스
 
 ```
@@ -154,10 +60,45 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
              [ Jenkins ]
            (1) Vite 빌드 수행
         (2) S3에 정적 파일 업로드
-( ./index.html에 대해 CloudFront 캐시 무효화 )
+ CloudFront에 index.html 캐시 무효화 요청
                   │
                   ▼
-        [ AWS S3 + CloudFront ]
+       [ AWS S3 + CloudFront ]
+```
+
+<br/>
+
+## 📡 프론트엔드 ↔ 백엔드 마이크로서비스 연동 구조
+
+- 프론트엔드는 별도의 환경 변수 없이, **CloudFront 도메인 하나로 모든 API 요청을 처리**합니다.
+
+- React 앱에서 `/api/...` 경로로 요청을 보내면, CloudFront가 해당 요청을 EC2에 위치한 API Gateway로 프록시합니다.
+
+- API Gateway는 요청을 적절한 마이크로서비스로 라우팅하고, 각 서비스는 공용 AWS RDS에 접근하여 데이터를 처리합니다.
+
+- 프론트와 백엔드가 같은 도메인에서 통신하기 때문에, **쿠키 전송, SameSite 정책, CORS 문제가 자연스럽게 해결**됩니다.
+
+- 프론트에서는 axios를 통해 **상대경로**(`/api/xxx`)로만 요청하면 되므로, 환경 변수 없이도 운영이 가능합니다.
+
+- 전체 흐름은 다음과 같습니다:
+
+```
+            [ 사용자 브라우저 ]
+                    │
+                    ▼
+   [ React 앱에서 axios로 /api/xxx 요청 ]
+                    │
+                    ▼
+    [ CloudFront (리버스 프록시 역할) ]
+                    │
+                    ▼
+ [ API Gateway (Spring Boot - EC2:8072) ]
+                    │
+                    ▼
+    [ 각 마이크로서비스 (Spring Boot) ]
+                    │
+                    ▼
+             [ 공용 AWS RDS ]
 ```
 
 <br/>
