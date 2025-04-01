@@ -103,29 +103,30 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 
 <br/>
 ## 🏗️ 시스템 아키텍처
+
 ![image](https://media.discordapp.net/attachments/1355032731234336798/1356602546273390592/image.webp?ex=67ed2a13&is=67ebd893&hm=8541702842be7512cbdcaf4b94296d582b256e16cb2cee1bac7f8807ba92095d&=&format=webp&width=1225&height=850)
 
 <br/>
 
 ## 📦 Github Repository
 전체 : https://github.com/orgs/newspace-msa/repositories
-<br>
+<br/>
 Deploy : https://github.com/newspace-msa/newspace-deploy
-<br>
+<br/>
 Frontend : https://github.com/newspace-msa/newspace-frontend
-<br>
+<br/>
 Config : https://github.com/newspace-msa/newspace-config
-<br>
+<br/>
 Config-Server : https://github.com/newspace-msa/newspace-config-service
-<br>
+<br/>
 Gateway : https://github.com/newspace-msa/newspace-gateway
-<br>
+<br/>
 Eureka : https://github.com/newspace-msa/newspace-eureka
-<br>
+<br/>
 User-Service : https://github.com/newspace-msa/newspace-user-service
-<br>
+<br/>
 Notice-Service : https://github.com/newspace-msa/newspace-notice-service
-<br>
+<br/>
 News-Service : https://github.com/newspace-msa/newspace-news-service
 
 <br/>
