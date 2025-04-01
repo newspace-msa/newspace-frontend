@@ -1,6 +1,12 @@
 # 🎯 NewSpace Frontend 클라우드 배포 프로젝트
 
-<img src="https://github.com/user-attachments/assets/04d415b7-b379-4a0b-9aba-ff1d3609db85" width="300" />
+<br/>
+
+## 🚀 배포 주소
+
+👉 [NewSpace 프론트엔드 배포 링크](http://d1wvssrshiud2m.cloudfront.net)
+
+> 위 링크를 통해 실제 서비스된 프론트엔드 앱을 확인할 수 있습니다.
 
 <br/>
 
@@ -113,19 +119,47 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 ## 🧩 CI/CD 자동화 프로세스
 
 ```
-        GitHub (main 브랜치 push)
+       GitHub (main 브랜치 push)
                   │
                   ▼
-        [ **GitHub Webhook** ]
+          [ GitHub Webhook ]
                   │
                   ▼
-            [ **Jenkins** ]
-        (1) Vite 빌드 수행
+             [ Jenkins ]
+           (1) Vite 빌드 수행
         (2) S3에 정적 파일 업로드
-        (3) ./index.html에 대해 CloudFront 캐시 무효화
+( ./index.html에 대해 CloudFront 캐시 무효화 )
                   │
                   ▼
-        [ **AWS S3 + CloudFront** ]
+        [ AWS S3 + CloudFront ]
+```
+
+<br/>
+
+## 🔁 백엔드 연동 구조 및 MSA 전환 개요
+
+### 📡 프론트엔드 ↔ 백엔드 연동 구조
+
+- 프론트에서는 환경 변수(VITE_NEWSPACE_TEST_BACKEND_URL)를 통해 API Gateway 주소를 주입받습니다.
+
+- API 요청은 API Gateway를 거쳐 각 도메인별 마이크로서비스로 라우팅됩니다.
+
+- 프론트엔드는 백엔드와 REST API로 통신하며, 아래와 같은 방식으로 요청을 주고받습니다.
+
+```
+            [ 사용자 브라우저 ]
+                    │
+                    ▼
+     [ React 앱에서 axios로 HTTP 요청 ]
+                    │
+                    ▼
+       [ API Gateway (Spring Boot) ]
+                    │
+                    ▼
+           [ 각 마이크로서비스 ]
+                    │
+                    ▼
+             [ 공용 AWS RDS ]
 ```
 
 <br/>
