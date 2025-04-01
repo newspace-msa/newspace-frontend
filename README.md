@@ -19,6 +19,32 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
 
 <br/>
 
+## 📡 프론트엔드 ↔ 백엔드 마이크로서비스 연동 구조
+
+- 프론트에서는 환경 변수(VITE_NEWSPACE_TEST_BACKEND_URL)를 통해 API Gateway 주소를 주입받습니다.
+
+- API 요청은 API Gateway를 거쳐 각 도메인별 마이크로서비스로 라우팅됩니다.
+
+- 프론트엔드는 백엔드와 REST API로 통신하며, 아래와 같은 방식으로 요청을 주고받습니다.
+
+```
+            [ 사용자 브라우저 ]
+                    │
+                    ▼
+     [ React 앱에서 axios로 HTTP 요청 ]
+                    │
+                    ▼
+       [ API Gateway (Spring Boot) ]
+                    │
+                    ▼
+           [ 각 마이크로서비스 ]
+                    │
+                    ▼
+             [ 공용 AWS RDS ]
+```
+
+<br/>
+
 ## 👩‍💻 팀원
 
 <table>
@@ -132,34 +158,6 @@ Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 
                   │
                   ▼
         [ AWS S3 + CloudFront ]
-```
-
-<br/>
-
-## 🔁 백엔드 연동 구조 및 MSA 전환 개요
-
-### 📡 프론트엔드 ↔ 백엔드 연동 구조
-
-- 프론트에서는 환경 변수(VITE_NEWSPACE_TEST_BACKEND_URL)를 통해 API Gateway 주소를 주입받습니다.
-
-- API 요청은 API Gateway를 거쳐 각 도메인별 마이크로서비스로 라우팅됩니다.
-
-- 프론트엔드는 백엔드와 REST API로 통신하며, 아래와 같은 방식으로 요청을 주고받습니다.
-
-```
-            [ 사용자 브라우저 ]
-                    │
-                    ▼
-     [ React 앱에서 axios로 HTTP 요청 ]
-                    │
-                    ▼
-       [ API Gateway (Spring Boot) ]
-                    │
-                    ▼
-           [ 각 마이크로서비스 ]
-                    │
-                    ▼
-             [ 공용 AWS RDS ]
 ```
 
 <br/>
