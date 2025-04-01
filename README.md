@@ -1,12 +1,16 @@
-# newspace-frontend MSA
-
-<br>
-
-## 📍 프로젝트명: Newspace to MSA
+# 🎯 NewSpace Frontend 클라우드 배포 프로젝트
 
 <img src="https://github.com/user-attachments/assets/04d415b7-b379-4a0b-9aba-ff1d3609db85" width="300" />
+
 <br>
 
+## 📌 프로젝트 개요
+
+newspace-msa 프로젝트의 프론트엔드 애플리케이션은 React + Vite 기반으로 개발되었으며,  
+AWS 인프라를 활용하여 **자동화된 CI/CD 배포 파이프라인**을 구성하였습니다.  
+Jenkins, GitHub Webhook, AWS S3, AWS CloudFront를 사용하여 **코드 변경 → 자동 배포**가 가능한 클라우드 환경을 구축했습니다.
+
+<br>
 ## 👩‍💻 팀원
 
 <table>
@@ -36,7 +40,7 @@
 
 <br/>
 
-## 📂 프로젝트 아키텍처
+## 📂 기존 Newspace Frontend 아키텍처
 
 ```
 ├── newspace-frontend
@@ -100,6 +104,26 @@
 │   ├── README.md
 │   └── vite.config.js
 │
+```
+
+<br/>
+
+## 🧩 CI/CD 자동화 프로세스
+
+```plaintext
+GitHub (main 브랜치 push)
+        │
+        ▼
+  [ GitHub Webhook ]
+        │
+        ▼
+     [ Jenkins ]
+   - Vite 빌드 수행
+   - S3에 정적 파일 업로드
+   - ./index.html에 대해 CloudFront 캐시 무효화
+        │
+        ▼
+ [ AWS S3 + CloudFront ]
 ```
 
 <br/>
